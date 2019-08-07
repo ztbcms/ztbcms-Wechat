@@ -9,6 +9,7 @@
 namespace Wechat\Service;
 
 
+use Wechat\Model\MiniPhoneNumberModel;
 use Wechat\Model\MiniUsersModel;
 
 class MiniUsersService extends MiniService
@@ -35,6 +36,56 @@ class MiniUsersService extends MiniService
             return self::createReturn(true, $user, '获取成功');
         } else {
             return self::createReturn(false, [], '找不到用户信息', 500);
+        }
+    }
+
+    /**
+     * 通过授权code 获取手机号码
+     *
+     * @param $code
+     * @param $iv
+     * @param $encryptedData
+     *
+     * @throws \EasyWeChat\Kernel\Exceptions\DecryptException
+     * @throws \EasyWeChat\Kernel\Exceptions\InvalidConfigException
+     * @throws \Think\Exception
+     * @return array
+     */
+    function getPhoneNumberByCode($code, $iv, $encryptedData)
+    {
+        $res = $this->app->auth->session($code);
+        if (!empty($res['session_key'])) {
+            //获取session_key 成功
+            $sessionKey = $res['session_key'];
+            $openid = $res['openid'];
+            $info = $this->app->encryptor->decryptData($sessionKey, $iv, $encryptedData);
+            if (!empty($info['phoneNumber'])) {
+                $postData = [
+                    'app_id'            => $this->app_id,
+                    'open_id'           => $openid,
+                    'country_code'      => $info['countryCode'],
+                    'phone_number'      => $info['phoneNumber'],
+                    'pure_phone_number' => $info['purePhoneNumber'],
+                    'create_time'       => time()
+                ];
+                $miniPhoneNumber = new MiniPhoneNumberModel();
+                $isExist = $miniPhoneNumber->where(['app_id' => $this->app_id, 'open_id' => $openid])->find();
+                if ($isExist) {
+                    $postData['update_time'] = time();
+                    $res = $miniPhoneNumber->where(['id' => $isExist['id']])->save($postData);
+                } else {
+                    $res = $miniPhoneNumber->add($postData);
+                }
+                if ($res) {
+                    return self::createReturn(true, $info, '获取成功');
+                } else {
+                    return self::createReturn(false, $info, '数据插入有误');
+                }
+            } else {
+                return self::createReturn(false, [], '获取用户信息失败', 500);
+            }
+        } else {
+            return self::createReturn(false, [], '获取session失败', 500);
         }
     }
 
