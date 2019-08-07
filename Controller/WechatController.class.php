@@ -36,11 +36,15 @@ class WechatController extends AdminBase
         $accountType = I('post.account_type');
         $appId = I('post.app_id');
         $secret = I('post.secret');
+        $mchId = I('post.mch_id');
+        $key = I('post.key');
         $postData = [
             'name'         => $name,
             'account_type' => $accountType,
             'app_id'       => $appId,
-            'secret'       => $secret
+            'secret'       => $secret,
+            'mch_id'       => $mchId,
+            'key'          => $key
         ];
         $OfficesModel = new OfficesModel();
         $res = $OfficesModel->editOffice($postData, $id);

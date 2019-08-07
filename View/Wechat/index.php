@@ -39,6 +39,18 @@
                             min-width="250">
                     </el-table-column>
                     <el-table-column
+                            prop="mch_id"
+                            label="微信支付mch_id"
+                            align="center"
+                            min-width="180">
+                    </el-table-column>
+                    <el-table-column
+                            prop="key"
+                            label="微信支付key"
+                            align="center"
+                            min-width="250">
+                    </el-table-column>
+                    <el-table-column
                             align="center"
                             label="创建时间"
                             min-width="180">
@@ -61,7 +73,7 @@
 
         <!-- 添加-->
         <el-dialog width="600px" :title="form.id==0?'添加公众号':'编辑公众号'" :visible.sync="dialogFormVisible">
-            <el-form :model="form" label-width="100px">
+            <el-form :model="form" label-width="130px">
                 <el-form-item label="公众号名称">
                     <el-input v-model="form.name"></el-input>
                 </el-form-item>
@@ -76,6 +88,12 @@
                 </el-form-item>
                 <el-form-item label="secret">
                     <el-input v-model="form.secret"></el-input>
+                </el-form-item>
+                <el-form-item label="微信支付mch_id">
+                    <el-input v-model="form.mch_id"></el-input>
+                </el-form-item>
+                <el-form-item label="微信支付key">
+                    <el-input v-model="form.key"></el-input>
                 </el-form-item>
             </el-form>
             <div slot="footer" class="dialog-footer">
