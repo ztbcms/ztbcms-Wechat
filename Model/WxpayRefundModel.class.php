@@ -9,7 +9,14 @@
 namespace Wechat\Model;
 
 
-class WxpayRefundModel
-{
+use Think\Model;
 
+class WxpayRefundModel extends Model
+{
+    const STATUS_YES = 1;
+    const STATUS_NO = 0;
+    protected $tableName = 'wechat_wxpay_refund';
+    protected $_validate = [
+        ['app_id', 'require', '必须输入公众号appid！'],
+    ];
 }
