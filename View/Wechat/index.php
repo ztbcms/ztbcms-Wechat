@@ -95,6 +95,29 @@
                 <el-form-item label="微信支付key">
                     <el-input v-model="form.key"></el-input>
                 </el-form-item>
+                <el-form-item label="支付cert_path">
+                    <el-upload
+                            class="upload-demo"
+                            action="{:U('Wechat/Wechat/uploadfile')}"
+                            :on-success="uploadSuccessCert"
+                            :show-file-list="false">
+
+                        <el-button size="small" type="primary">点击上传</el-button>
+                        <div slot="tip" class="el-upload__tip">{{cert_path}}</div>
+                        <div slot="tip" class="el-upload__tip">请上传微信支付的 apiclient_cert.pem文件</div>
+                    </el-upload>
+                </el-form-item>
+                <el-form-item label="支付key_path">
+                    <el-upload
+                            class="upload-demo"
+                            action="{:U('Wechat/Wechat/uploadfile')}"
+                            :on-success="uploadSuccessKey"
+                            :show-file-list="false">
+                        <el-button size="small" type="primary">点击上传</el-button>
+                        <div slot="tip" class="el-upload__tip">{{key_path}}</div>
+                        <div slot="tip" class="el-upload__tip">请上传微信支付的 apiclient_key.pem文件</div>
+                    </el-upload>
+                </el-form-item>
             </el-form>
             <div slot="footer" class="dialog-footer">
                 <el-button @click="dialogFormVisible = false">取 消</el-button>
@@ -113,14 +136,39 @@
                         name: "",
                         account_type: "office",
                         app_id: "",
-                        secret: ""
+                        secret: "",
+                        mch_id: "",
+                        key: "",
+                        cert_path: "",
+                        key_path: ""
                     },
+                    key_path: "",
+                    cert_path: "",
                     offices: []
                 },
                 mounted() {
                     this.getDetail()
                 },
                 methods: {
+                    uploadSuccessKey(res) {
+                        console.log("uploadSuccessKey", res);
+                        if (res.status) {
+                            this.key_path = res.data.path;
+                            this.form.key_path = this.key_path
+                            // this.form = Object.assign(this.form, {key_path: res.data.path});
+                        } else {
+                            this.$message.error(res.msg)
+                        }
+                    },
+                    uploadSuccessCert(res) {
+                        console.log("uploadSuccessCert", res);
+                        if (res.status) {
+                            this.cert_path = res.data.path;
+                            this.form.cert_path = this.cert_path
+                        } else {
+                            this.$message.error(res.msg)
+                        }
+                    },
                     deleteEvent(deleteItem) {
                         var _this = this;
                         this.$confirm('是否确认删除"' + deleteItem.name + '" ？').then(res => {
@@ -144,6 +192,8 @@
                     },
                     editEvent(editItem) {
                         this.form = editItem;
+                        this.cert_path = this.form.cert_path;
+                        this.key_path = this.form.key_path;
                         this.dialogFormVisible = true
                     },
                     getDetail() {
@@ -180,7 +230,19 @@
                         })
                     },
                     addEvent: function () {
-                        this.form.id = 0;
+                        this.form = {
+                            id: 0,
+                            name: "",
+                            account_type: "office",
+                            app_id: "",
+                            secret: "",
+                            mch_id: "",
+                            key: "",
+                            cert_path: "",
+                            key_path: ""
+                        };
+                        this.cert_path = "";
+                        this.key_path = "";
                         this.dialogFormVisible = true
                     }
                 }
