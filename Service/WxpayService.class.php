@@ -13,6 +13,7 @@ use EasyWeChat\Factory;
 use System\Service\BaseService;
 use Think\Exception;
 use Wechat\Model\OfficesModel;
+use Wechat\Model\WxpayMchpayModel;
 use Wechat\Model\WxpayOrderModel;
 use Wechat\Model\WxpayRefundModel;
 
@@ -90,6 +91,99 @@ class WxpayService extends BaseService
             }
         });
     }
+
+    /**
+     * 执行企业付款操作
+     *
+     * @throws Exception
+     * @return array
+     */
+    function doMchpayOrder()
+    {
+        $wxpayMchpayModel = new WxpayMchpayModel();
+        $where = [
+            'app_id'            => $this->app_id,
+            'status'            => WxpayRefundModel::STATUS_NO, //处理未完成的退款
+            'next_process_time' => ['lt', time()],//处理时间小于现在时间
+            'process_count'     => ['lt', 7],//处理次数小于7次
+        ];
+        $mchpayOrders = $wxpayMchpayModel->where($where)->select();
+        $nextProcessTimeArray = [60, 300, 900, 3600, 10800, 21600, 86400];
+        foreach ($mchpayOrders as $mchpayOrder) {
+            try {
+                $mchpayRes = $this->payment->transfer->toBalance([
+                    'partner_trade_no' => $mchpayOrder['partner_trade_no'], // 商户订单号，需保持唯一性(只能是字母或者数字，不能包含有符号)
+                    'openid'           => $mchpayOrder['open_id'],
+                    'check_name'       => 'NO_CHECK', // NO_CHECK：不校验真实姓名, FORCE_CHECK：强校验真实姓名
+                    'amount'           => $mchpayOrder['amount'], // 企业付款金额，单位为分
+                    'desc'             => $mchpayOrder['description'], // 企业付款操作说明信息。必填
+                ]);
+                if ($mchpayRes['result_code'] == 'SUCCESS' && $mchpayRes['return_code'] == 'SUCCESS') {
+                    $postData = [
+                        'status'            => WxpayMchpayModel::STATUS_YES,
+                        'refund_result'     => json_encode($mchpayRes),
+                        'next_process_time' => time() + (empty($nextProcessTimeArray[$mchpayOrder['next_process_count']]) ? 86400 : $nextProcessTimeArray[$mchpayOrder['next_process_count']]),
+                        'process_count'     => $mchpayOrder['next_process_count'] + 1,
+                        'update_time'       => time()
+                    ];
+                    $wxpayMchpayModel->where(['id' => $mchpayOrder['id']])->save($postData);
+                } else {
+                    $postData = [
+                        'status'            => WxpayMchpayModel::STATUS_NO,
+                        'refund_result'     => json_encode($mchpayRes),
+                        'next_process_time' => time() + (empty($nextProcessTimeArray[$mchpayOrder['next_process_count']]) ? 86400 : $nextProcessTimeArray[$mchpayOrder['next_process_count']]),
+                        'process_count'     => $mchpayOrder['next_process_count'] + 1,
+                        'update_time'       => time()
+                    ];
+                    $wxpayMchpayModel->where(['id' => $mchpayOrder['id']])->save($postData);
+                }
+            } catch (\EasyWeChat\Kernel\Exceptions\Exception $exception) {
+                $postData = [
+                    'status'            => WxpayMchpayModel::STATUS_NO,
+                    'refund_result'     => $exception->getMessage(),
+                    'next_process_time' => time() + (empty($nextProcessTimeArray[$mchpayOrder['next_process_count']]) ? 86400 : $nextProcessTimeArray[$mchpayOrder['next_process_count']]),
+                    'process_count'     => $mchpayOrder['next_process_count'] + 1,
+                    'update_time'       => time()
+                ];
+                $wxpayMchpayModel->where(['id' => $mchpayOrder['id']])->save($postData);
+            }
+        }
+        return self::createReturn(true, [], '处理完毕');
+    }
+
+    /**
+     * 提交企业付款申请
+     *
+     * @param $openId
+     * @param $amount
+     * @param $description
+     *
+     * @throws Exception
+     * @return array
+     */
+    function createMchpay($openId, $amount, $description = "企业付款")
+    {
+        $partnerTradeNo = date("YmdHis").rand(100000, 999990);
+        $postData = [
+            'app_id'            => $this->app_id,
+            'partner_trade_no'  => $partnerTradeNo,
+            'open_id'           => $openId,
+            'amount'            => $amount,
+            'description'       => $description,
+            'status'            => WxpayMchpayModel::STATUS_NO,
+            'next_process_time' => time(),
+            'process_count'     => 0,
+            'create_time'       => time()
+        ];
+        $wxpayMchpayModel = new WxpayMchpayModel();
+        $res = $wxpayMchpayModel->add($postData);
+        if ($res) {
+            return self::createReturn(true, [], '申请企业付款成功，等待处理');
+        } else {
+            return self::createReturn(false, [], '');
+        }
+    }
+
 
     /**
      * 执行退款操作
