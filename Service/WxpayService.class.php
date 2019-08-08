@@ -11,6 +11,7 @@ namespace Wechat\Service;
 
 use EasyWeChat\Factory;
 use System\Service\BaseService;
+use Think\Exception;
 use Wechat\Model\OfficesModel;
 use Wechat\Model\WxpayOrderModel;
 
@@ -115,6 +116,40 @@ class WxpayService extends BaseService
         }
         $this->errorMsg = $result['return_msg'];
         return false;
+    }
+
+    /**
+     * 获取jssdk支付配置
+     *
+     * @param        $openId
+     * @param        $outTradeNo
+     * @param        $totalFee
+     * @param        $notifyUrl
+     * @param string $body
+     *
+     * @throws \EasyWeChat\Kernel\Exceptions\InvalidConfigException
+     * @throws \Think\Exception
+     * @return array
+     */
+    function getJssdkPayConfig($openId, $outTradeNo, $totalFee, $notifyUrl, $body = "微信支付")
+    {
+        $prepayId = $this->createUnity($openId, $outTradeNo, $totalFee, $notifyUrl, $body, "JSAPI");
+        if (!$prepayId) {
+            return self::createReturn(false, [], '微信支付下单失败：'.$this->errorMsg);
+        }
+        $postData = [
+            'app_id'       => $this->app_id,
+            'open_id'      => $openId,
+            'out_trade_no' => $outTradeNo,
+            'total_fee'    => $totalFee,
+            'create_time'  => time(),
+            'notify_url'   => $notifyUrl
+        ];
+        //添加支付订单入库
+        $wxpayOrderModel = new WxpayOrderModel();
+        $wxpayOrderModel->add($postData);
+        $res = $this->payment->jssdk->sdkConfig($prepayId);
+        return createReturn(true, $res, '获取成功');
     }
 
     /**
