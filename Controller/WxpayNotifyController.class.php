@@ -19,6 +19,8 @@ class WxpayNotifyController extends Base
      * 因为跳掉地址不能带有参数，所有该url要可以重写  xxx/Wechat/WxpayNotify/index/appid/{appid}
      *
      * @param $appid
+     *
+     * @throws \Think\Exception
      */
     function index($appid)
     {

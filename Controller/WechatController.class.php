@@ -38,13 +38,17 @@ class WechatController extends AdminBase
         $secret = I('post.secret');
         $mchId = I('post.mch_id');
         $key = I('post.key');
+        $certPath = I('post.cert_path');
+        $keyPath = I('post.key_path');
         $postData = [
             'name'         => $name,
             'account_type' => $accountType,
             'app_id'       => $appId,
             'secret'       => $secret,
             'mch_id'       => $mchId,
-            'key'          => $key
+            'key'          => $key,
+            'cert_path'    => $certPath,
+            'key_path'     => $keyPath
         ];
         $OfficesModel = new OfficesModel();
         $res = $OfficesModel->editOffice($postData, $id);
@@ -72,6 +76,24 @@ class WechatController extends AdminBase
             $this->ajaxReturn(self::createReturn(true, [], ''));
         } else {
             $this->ajaxReturn(self::createReturn(false, [], $OfficesModel->getError()));
+        }
+    }
+
+    /**
+     * 上传文件接口
+     */
+    function uploadfile()
+    {
+        $upload = new \UploadFile();
+        $upload->exts = ['jpg', 'gif', 'png', 'jpeg'];
+        $upload->savePath = C("UPLOADFILEPATH").'wechat/cert/';
+        $res = $upload->upload();
+        if ($res) {
+            $file = $upload->getUploadFileInfo()[0];
+            $path = $file['savepath'].$file['savename'];
+            $this->ajaxReturn(self::createReturn(true, ['path' => $path], '上传成功'));
+        } else {
+            $this->ajaxReturn(self::createReturn(false, [], $upload->getErrorMsg()));
         }
     }
 }
