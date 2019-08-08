@@ -15,6 +15,7 @@ use Think\Exception;
 use Wechat\Model\OfficesModel;
 use Wechat\Model\WxpayMchpayModel;
 use Wechat\Model\WxpayOrderModel;
+use Wechat\Model\WxpayRedpackModel;
 use Wechat\Model\WxpayRefundModel;
 
 class WxpayService extends BaseService
@@ -93,6 +94,106 @@ class WxpayService extends BaseService
     }
 
     /**
+     * 执行企业付款操作（小程序不支持发红包）
+     *
+     * @throws Exception
+     * @return array
+     */
+    function doRedpackOrder()
+    {
+        $wxpayRedpackModel = new WxpayRedpackModel();
+        $where = [
+            'app_id'            => $this->app_id,
+            'status'            => WxpayRedpackModel::STATUS_NO, //处理未完成的退款
+            'next_process_time' => ['lt', time()],//处理时间小于现在时间
+            'process_count'     => ['lt', 7],//处理次数小于7次
+        ];
+        $redpackOrders = $wxpayRedpackModel->where($where)->select();
+        $nextProcessTimeArray = [60, 300, 900, 3600, 10800, 21600, 86400];
+        foreach ($redpackOrders as $redpackOrder) {
+            try {
+                $redpackRes = $this->payment->redpack->sendNormal([
+                    'mch_billno'   => $redpackOrder['mch_billno'],
+                    'send_name'    => $redpackOrder['send_name'],
+                    're_openid'    => $redpackOrder['open_id'],
+                    'total_amount' => $redpackOrder['total_amount'],  //单位为分，不小于100
+                    'wishing'      => $redpackOrder['wishing'],
+                    'act_name'     => $redpackOrder['act_name'],
+                    'remark'       => $redpackOrder['remark'],
+                ]);
+                if ($redpackRes['result_code'] == 'SUCCESS' && $redpackRes['return_code'] == 'SUCCESS') {
+                    $postData = [
+                        'status'            => WxpayRedpackModel::STATUS_YES,
+                        'send_result'       => json_encode($redpackRes),
+                        'next_process_time' => time() + (empty($nextProcessTimeArray[$redpackOrder['next_process_count']]) ? 86400 : $nextProcessTimeArray[$redpackOrder['next_process_count']]),
+                        'process_count'     => $redpackOrder['next_process_count'] + 1,
+                        'update_time'       => time()
+                    ];
+                    $wxpayRedpackModel->where(['id' => $redpackOrder['id']])->save($postData);
+                } else {
+                    $postData = [
+                        'status'            => WxpayRedpackModel::STATUS_NO,
+                        'send_result'       => json_encode($redpackRes),
+                        'next_process_time' => time() + (empty($nextProcessTimeArray[$redpackOrder['next_process_count']]) ? 86400 : $nextProcessTimeArray[$redpackOrder['next_process_count']]),
+                        'process_count'     => $redpackOrder['next_process_count'] + 1,
+                        'update_time'       => time()
+                    ];
+                    $wxpayRedpackModel->where(['id' => $redpackOrder['id']])->save($postData);
+                }
+            } catch (\EasyWeChat\Kernel\Exceptions\Exception $exception) {
+                $postData = [
+                    'status'            => WxpayRedpackModel::STATUS_NO,
+                    'send_result'       => $exception->getMessage(),
+                    'next_process_time' => time() + (empty($nextProcessTimeArray[$redpackOrder['next_process_count']]) ? 86400 : $nextProcessTimeArray[$redpackOrder['next_process_count']]),
+                    'process_count'     => $redpackOrder['next_process_count'] + 1,
+                    'update_time'       => time()
+                ];
+                $wxpayRedpackModel->where(['id' => $redpackOrder['id']])->save($postData);
+            }
+        }
+        return self::createReturn(true, [], '处理完毕');
+    }
+
+    /**
+     * 提交发红包申请（小程序不支持发红包）
+     *
+     * @param        $openId
+     * @param        $totalAmount 发送金额
+     * @param        $sendName    发送者名称
+     * @param string $wishing     祝福语
+     * @param string $actName
+     * @param string $remark
+     *
+     * @throws Exception
+     * @return array
+     */
+    function createRedpack($openId, $totalAmount, $sendName, $wishing = "恭喜发财，大吉大利", $actName = "红包活动", $remark = "无")
+    {
+        $mchBillno = date("YmdHis").rand(100000, 999990);
+        $postData = [
+            'app_id'            => $this->app_id,
+            'mch_billno'        => $mchBillno,
+            'open_id'           => $openId,
+            'total_amount'      => $totalAmount,
+            'send_name'         => $sendName,
+            'wishing'           => $wishing,
+            'act_name'          => $actName,
+            'remark'            => $remark,
+            'status'            => WxpayRedpackModel::STATUS_NO,
+            'next_process_time' => time(),
+            'process_count'     => 0,
+            'create_time'       => time()
+        ];
+        $wxpayRedpackModel = new WxpayRedpackModel();
+        $res = $wxpayRedpackModel->add($postData);
+        if ($res) {
+            return self::createReturn(true, [], '申请发送红包成功，等待处理');
+        } else {
+            return self::createReturn(false, [], '');
+        }
+    }
+
+    /**
      * 执行企业付款操作
      *
      * @throws Exception
@@ -103,7 +204,7 @@ class WxpayService extends BaseService
         $wxpayMchpayModel = new WxpayMchpayModel();
         $where = [
             'app_id'            => $this->app_id,
-            'status'            => WxpayRefundModel::STATUS_NO, //处理未完成的退款
+            'status'            => WxpayMchpayModel::STATUS_NO, //处理未完成的退款
             'next_process_time' => ['lt', time()],//处理时间小于现在时间
             'process_count'     => ['lt', 7],//处理次数小于7次
         ];
