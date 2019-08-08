@@ -60,7 +60,7 @@ class WxpayService extends BaseService
         return $this->payment->handlePaidNotify(function ($message, $fail) use ($func) {
             $outTradeNo = $message['out_trade_no'];
             $wxpayOrderModel = new WxpayOrderModel();
-            $order = $wxpayOrderModel->where(['out_trade_no' => $outTradeNo])->save();
+            $order = $wxpayOrderModel->where(['out_trade_no' => $outTradeNo])->find();
             if ($order) {
                 $updateData = [
                     'mch_id'         => $message['mch_id'],
