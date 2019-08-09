@@ -41,7 +41,7 @@ class MiniService extends BaseService
             $this->app_id = $app_id;
             $this->app = Factory::miniProgram($config);
         } else {
-            throw new Exception("找不到该小程序信息");
+            return self::createReturn(false, [], "找不到该小程序信息");
         }
     }
 }

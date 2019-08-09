@@ -12,6 +12,7 @@ namespace Wechat\Controller;
 use Common\Controller\Base;
 use Wechat\Model\AutoTokenModel;
 use Wechat\Model\OfficeUsersModel;
+use Wechat\Service\MiniUsersService;
 use Wechat\Service\OfficeService;
 
 class AuthController extends Base
@@ -118,6 +119,25 @@ class AuthController extends Base
         } else {
             $this->ajaxReturn(self::createReturn(false, [], '获取用户信息失败'));
         }
+    }
+
+    /**
+     * 授权微信小程序信息
+     *
+     * @param $appid
+     *
+     * @throws \EasyWeChat\Kernel\Exceptions\DecryptException
+     * @throws \EasyWeChat\Kernel\Exceptions\InvalidConfigException
+     * @throws \Think\Exception
+     */
+    function miniAuthUserInfo($appid)
+    {
+        $code = I('post.code');
+        $iv = I('post.iv');
+        $encryptedData = I('encrypted_data');
+        $miniUsersModel = new MiniUsersService($appid);
+        $res = $miniUsersModel->getUserInfoByCode($code, $iv, $encryptedData);
+        $this->ajaxReturn($res);
     }
 
     /**

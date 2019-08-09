@@ -9,34 +9,16 @@
 namespace Wechat\Service;
 
 
+use Wechat\Model\AutoTokenModel;
 use Wechat\Model\MiniPhoneNumberModel;
 use Wechat\Model\MiniUsersModel;
+use Wechat\Model\OfficesModel;
 
 class MiniUsersService extends MiniService
 {
     public function __construct($app_id)
     {
         parent::__construct($app_id);
-    }
-
-    /**
-     * 通过token获取用户信息
-     *
-     * @param $accessToken
-     *
-     * @throws \Think\Exception
-     * @return array
-     */
-    function getUserInfoByToken($accessToken)
-    {
-        $usersModel = new MiniUsersModel();
-        $fields = 'open_id,nick_name,gender,language,city,province,country,avatar_url,access_token';
-        $user = $usersModel->where(['app_id' => $this->app_id, 'access_token' => $accessToken])->field($fields)->find();
-        if ($user) {
-            return self::createReturn(true, $user, '获取成功');
-        } else {
-            return self::createReturn(false, [], '找不到用户信息', 500);
-        }
     }
 
     /**
@@ -111,19 +93,17 @@ class MiniUsersService extends MiniService
             $unionid = !empty($res['unionid']) ? $res['unionid'] : '';
             $info = $this->app->encryptor->decryptData($sessionKey, $iv, $encryptedData);
             if (!empty($info['openId'])) {
-                $accessToken = md5($sessionKey.time().rand(1000, 9999));
                 $data = [
-                    'app_id'       => $this->app_id,
-                    'open_id'      => $openid,
-                    'union_id'     => $unionid,
-                    'nick_name'    => $info['nickName'],
-                    'gender'       => $info['gender'],
-                    'language'     => $info['language'],
-                    'city'         => $info['city'],
-                    'province'     => $info['province'],
-                    'country'      => $info['country'],
-                    'avatar_url'   => $info['avatarUrl'],
-                    'access_token' => $accessToken
+                    'app_id'     => $this->app_id,
+                    'open_id'    => $openid,
+                    'union_id'   => $unionid,
+                    'nick_name'  => $info['nickName'],
+                    'gender'     => $info['gender'],
+                    'language'   => $info['language'],
+                    'city'       => $info['city'],
+                    'province'   => $info['province'],
+                    'country'    => $info['country'],
+                    'avatar_url' => $info['avatarUrl'],
                 ];
                 $usersModel = new MiniUsersModel();
                 $user = $usersModel->where(['app_id' => $data['app_id'], 'open_id' => $data['open_id']])->find();
@@ -136,7 +116,20 @@ class MiniUsersService extends MiniService
                 }
                 $fields = 'open_id,nick_name,gender,language,city,province,country,avatar_url,access_token';
                 $usersModel->where(['app_id' => $data['app_id'], 'open_id' => $data['open_id']])->field($fields)->find();
-                return self::createReturn(true, $user, '获取成功');
+
+                //生成登录token
+                $authTokenModel = new AutoTokenModel();
+                $authToken = $authTokenModel->createAuthToken($this->app_id, $openid, OfficesModel::ACCOUNT_TYPE_MINI);
+                if ($authToken) {
+                    $result = array_merge($data, [
+                        'token'         => $authToken['token'],
+                        'expire_time'   => $authToken['expire_time'],
+                        'refresh_token' => $authToken['refresh_token'],
+                    ]);
+                    return self::createReturn(true, $result, '获取成功');
+                } else {
+                    return self::createReturn(false, [], '生成登录信息失败', 500);
+                }
             } else {
                 return self::createReturn(false, [], '获取用户信息失败', 500);
             }
