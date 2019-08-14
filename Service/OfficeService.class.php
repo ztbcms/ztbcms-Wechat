@@ -45,4 +45,27 @@ class OfficeService extends BaseService
             throw new Exception("找不到该小程序信息");
         }
     }
+
+    /**
+     * 获取网页开发的jssdk
+     *
+     * @param       $url
+     * @param array $APIs
+     * @param bool  $debug
+     *
+     * @throws \EasyWeChat\Kernel\Exceptions\InvalidConfigException
+     * @throws \EasyWeChat\Kernel\Exceptions\RuntimeException
+     * @throws \Psr\SimpleCache\InvalidArgumentException
+     * @return array
+     */
+    function getJssdk($url, $APIs = [], $debug = false)
+    {
+        $this->app->jssdk->setUrl($url);
+        $res = $this->app->jssdk->buildConfig($APIs, $debug);
+        if ($res) {
+            return self::createReturn(true, ['config' => $res], '获取成功');
+        } else {
+            return self::createReturn(false, [], '获取失败');
+        }
+    }
 }
