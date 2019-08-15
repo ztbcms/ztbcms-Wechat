@@ -14,6 +14,8 @@ use Wechat\Model\OfficeQrcodeModel;
 class OfficeQrcodeService extends OfficeService
 {
     /**
+     * 获取永久参数二维码
+     *
      * @param int $param
      *
      * @throws \EasyWeChat\Kernel\Exceptions\InvalidConfigException
