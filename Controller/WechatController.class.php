@@ -16,8 +16,13 @@ class WechatController extends AdminBase
     function index()
     {
         if (IS_AJAX) {
+            $accountType = I('get.account_type');
+            $where = [];
+            if ($accountType) {
+                $where['account_type'] = $accountType;
+            }
             $OfficesModel = new OfficesModel();
-            $offices = $OfficesModel->order("id DESC")->select();
+            $offices = $OfficesModel->where($where)->order("id DESC")->select();
             $this->ajaxReturn(self::createReturn(true, $offices, '获取成功'));
         } else {
             $this->display();

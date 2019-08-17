@@ -10,13 +10,85 @@ namespace Wechat\Controller;
 
 
 use Common\Controller\AdminBase;
+use Wechat\Model\MiniCodeModel;
 use Wechat\Model\MiniTemplateListModel;
 use Wechat\Model\MiniUsersModel;
 use Wechat\Model\OfficesModel;
+use Wechat\Service\MiniCodeService;
 use Wechat\Service\MiniTemplateService;
 
 class MiniController extends AdminBase
 {
+    /**
+     * 创建小程序码
+     *
+     * @throws \EasyWeChat\Kernel\Exceptions\InvalidArgumentException
+     * @throws \EasyWeChat\Kernel\Exceptions\InvalidConfigException
+     * @throws \EasyWeChat\Kernel\Exceptions\RuntimeException
+     * @throws \Think\Exception
+     */
+    function createCode()
+    {
+        $appId = I('post.app_id');
+        $type = I('post.type');
+        $path = I('post.path');
+        $scene = I('post.scene');
+        $miniCodeService = new MiniCodeService($appId);
+        if ($type == MiniCodeModel::CODE_TYPE_LIMIT) {
+            $res = $miniCodeService->getMiniCode($path.$scene);
+        } else {
+            $opstional = [];
+            if ($path) {
+                $opstional['page'] = $path;
+            }
+            $res = $miniCodeService->getUnlimitMiniCode($scene, $opstional);
+        }
+        $this->ajaxReturn($res);
+    }
+
+    /**
+     * 删除小程序码
+     *
+     * @throws \Think\Exception
+     */
+    function deleteCode()
+    {
+        $id = I('post.id');
+        $miniCodeModel = new MiniCodeModel();
+        $miniCode = $miniCodeModel->where(['id' => $id])->find();
+        if ($miniCode) {
+            $res = $miniCodeModel->where(['id' => $miniCode['id']])->delete();
+            if ($res) {
+                $this->ajaxReturn(self::createReturn(true, [], '删除成功'));
+            } else {
+                $this->ajaxReturn(self::createReturn(false, [], '删除失败'));
+            }
+        } else {
+            $this->ajaxReturn(self::createReturn(false, [], '找不到小程序码'));
+        }
+    }
+
+    /**
+     * 获取小程序码
+     */
+    function codeList()
+    {
+        if (IS_AJAX) {
+            $appId = I('get.app_id', '');
+            $page = I('get.page', 1);
+            $limit = I('get.limit', 20);
+            $where = [];
+            if ($appId) {
+                $where['app_id'] = ['like', '%'.$appId.'%'];
+            }
+            $miniCodeModel = new MiniCodeModel();
+            $res = $miniCodeModel->where($where)->page($page, $limit)->order('id DESC')->select();
+            $totalCount = $miniCodeModel->where($where)->count();
+            $this->ajaxReturn(self::createReturnList(true, $res ? $res : [], $page, $limit, $totalCount, ceil($totalCount / $limit), '获取成功'));
+        }
+        $this->display('codelist');
+    }
+
     /**
      * 发送模板消息测试
      *
