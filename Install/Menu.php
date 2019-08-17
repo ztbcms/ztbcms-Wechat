@@ -29,10 +29,21 @@ return [
                 "name"   => "小程序",
                 "child"  => [
                     [
-                        "route"  => "Wechat/Wechat/users",
+                        "route"  => "Wechat/Mini/users",
                         "type"   => 0,
                         "status" => 1,
                         "name"   => "授权用户",
+                    ],
+                    [
+                        "route"  => "Wechat/Mini/codeList",
+                        "type"   => 0,
+                        "status" => 1,
+                        "name"   => "小程序码",
+                    ], [
+                        "route"  => "Wechat/Mini/templateList",
+                        "type"   => 0,
+                        "status" => 1,
+                        "name"   => "消息模板",
                     ]
                 ]
             ],
