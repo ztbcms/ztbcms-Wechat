@@ -90,7 +90,7 @@ class OfficeQrcodeService extends OfficeService
                 $postData = [
                     'app_id'      => $this->app_id,
                     'param'       => $param,
-                    'expire_time' => $expireTime,
+                    'expire_time' => time() + $expireTime,
                     'file_path'   => $filePath,
                     'qrcode_url'  => $url,
                     'type'        => OfficeQrcodeModel::QRCODE_TYPE_TEMPORARY,
