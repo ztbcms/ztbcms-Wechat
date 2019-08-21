@@ -46,6 +46,30 @@ return [
                         "name"   => "消息模板",
                     ]
                 ]
+            ], [
+                "route"  => "Wechat/Office/index",
+                "type"   => 0,
+                "status" => 1,
+                "name"   => "公众号",
+                "child"  => [
+                    [
+                        "route"  => "Wechat/Office/users",
+                        "type"   => 0,
+                        "status" => 1,
+                        "name"   => "授权用户",
+                    ],
+                    [
+                        "route"  => "Wechat/Office/qrcodeList",
+                        "type"   => 0,
+                        "status" => 1,
+                        "name"   => "参数二维码",
+                    ], [
+                        "route"  => "Wechat/Office/templateList",
+                        "type"   => 0,
+                        "status" => 1,
+                        "name"   => "消息模板",
+                    ]
+                ]
             ],
         ],
     ],
