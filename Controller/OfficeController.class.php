@@ -131,9 +131,9 @@ class OfficeController extends AdminBase
      */
     function syncTemplateList()
     {
-        //获取所有的小程序
-        $miniOfiiceModel = new OfficesModel();
-        $minioffices = $miniOfiiceModel->where(['account_type' => OfficesModel::ACCOUNT_TYPE_OFFICE])->field("app_id")->select();
+        //获取所有的公众号
+        $ofiiceModel = new OfficesModel();
+        $minioffices = $ofiiceModel->where(['account_type' => OfficesModel::ACCOUNT_TYPE_OFFICE])->field("app_id")->select();
         foreach ($minioffices as $minioffice) {
             $appId = $minioffice['app_id'];
             $templateService = new OfficeTemplateService($appId);

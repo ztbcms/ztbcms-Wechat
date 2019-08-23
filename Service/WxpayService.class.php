@@ -125,8 +125,8 @@ class WxpayService extends BaseService
                     $postData = [
                         'status'            => WxpayRedpackModel::STATUS_YES,
                         'send_result'       => json_encode($redpackRes),
-                        'next_process_time' => time() + (empty($nextProcessTimeArray[$redpackOrder['next_process_count']]) ? 86400 : $nextProcessTimeArray[$redpackOrder['next_process_count']]),
-                        'process_count'     => $redpackOrder['next_process_count'] + 1,
+                        'next_process_time' => time() + (empty($nextProcessTimeArray[$redpackOrder['process_count']]) ? 86400 : $nextProcessTimeArray[$redpackOrder['process_count']]),
+                        'process_count'     => $redpackOrder['process_count'] + 1,
                         'update_time'       => time()
                     ];
                     $wxpayRedpackModel->where(['id' => $redpackOrder['id']])->save($postData);
@@ -134,8 +134,8 @@ class WxpayService extends BaseService
                     $postData = [
                         'status'            => WxpayRedpackModel::STATUS_NO,
                         'send_result'       => json_encode($redpackRes),
-                        'next_process_time' => time() + (empty($nextProcessTimeArray[$redpackOrder['next_process_count']]) ? 86400 : $nextProcessTimeArray[$redpackOrder['next_process_count']]),
-                        'process_count'     => $redpackOrder['next_process_count'] + 1,
+                        'next_process_time' => time() + (empty($nextProcessTimeArray[$redpackOrder['process_count']]) ? 86400 : $nextProcessTimeArray[$redpackOrder['process_count']]),
+                        'process_count'     => $redpackOrder['process_count'] + 1,
                         'update_time'       => time()
                     ];
                     $wxpayRedpackModel->where(['id' => $redpackOrder['id']])->save($postData);
@@ -144,8 +144,8 @@ class WxpayService extends BaseService
                 $postData = [
                     'status'            => WxpayRedpackModel::STATUS_NO,
                     'send_result'       => $exception->getMessage(),
-                    'next_process_time' => time() + (empty($nextProcessTimeArray[$redpackOrder['next_process_count']]) ? 86400 : $nextProcessTimeArray[$redpackOrder['next_process_count']]),
-                    'process_count'     => $redpackOrder['next_process_count'] + 1,
+                    'next_process_time' => time() + (empty($nextProcessTimeArray[$redpackOrder['process_count']]) ? 86400 : $nextProcessTimeArray[$redpackOrder['process_count']]),
+                    'process_count'     => $redpackOrder['process_count'] + 1,
                     'update_time'       => time()
                 ];
                 $wxpayRedpackModel->where(['id' => $redpackOrder['id']])->save($postData);
@@ -223,8 +223,8 @@ class WxpayService extends BaseService
                     $postData = [
                         'status'            => WxpayMchpayModel::STATUS_YES,
                         'refund_result'     => json_encode($mchpayRes),
-                        'next_process_time' => time() + (empty($nextProcessTimeArray[$mchpayOrder['next_process_count']]) ? 86400 : $nextProcessTimeArray[$mchpayOrder['next_process_count']]),
-                        'process_count'     => $mchpayOrder['next_process_count'] + 1,
+                        'next_process_time' => time() + (empty($nextProcessTimeArray[$mchpayOrder['process_count']]) ? 86400 : $nextProcessTimeArray[$mchpayOrder['process_count']]),
+                        'process_count'     => $mchpayOrder['process_count'] + 1,
                         'update_time'       => time()
                     ];
                     $wxpayMchpayModel->where(['id' => $mchpayOrder['id']])->save($postData);
@@ -232,8 +232,8 @@ class WxpayService extends BaseService
                     $postData = [
                         'status'            => WxpayMchpayModel::STATUS_NO,
                         'refund_result'     => json_encode($mchpayRes),
-                        'next_process_time' => time() + (empty($nextProcessTimeArray[$mchpayOrder['next_process_count']]) ? 86400 : $nextProcessTimeArray[$mchpayOrder['next_process_count']]),
-                        'process_count'     => $mchpayOrder['next_process_count'] + 1,
+                        'next_process_time' => time() + (empty($nextProcessTimeArray[$mchpayOrder['process_count']]) ? 86400 : $nextProcessTimeArray[$mchpayOrder['process_count']]),
+                        'process_count'     => $mchpayOrder['process_count'] + 1,
                         'update_time'       => time()
                     ];
                     $wxpayMchpayModel->where(['id' => $mchpayOrder['id']])->save($postData);
@@ -242,8 +242,8 @@ class WxpayService extends BaseService
                 $postData = [
                     'status'            => WxpayMchpayModel::STATUS_NO,
                     'refund_result'     => $exception->getMessage(),
-                    'next_process_time' => time() + (empty($nextProcessTimeArray[$mchpayOrder['next_process_count']]) ? 86400 : $nextProcessTimeArray[$mchpayOrder['next_process_count']]),
-                    'process_count'     => $mchpayOrder['next_process_count'] + 1,
+                    'next_process_time' => time() + (empty($nextProcessTimeArray[$mchpayOrder['process_count']]) ? 86400 : $nextProcessTimeArray[$mchpayOrder['process_count']]),
+                    'process_count'     => $mchpayOrder['process_count'] + 1,
                     'update_time'       => time()
                 ];
                 $wxpayMchpayModel->where(['id' => $mchpayOrder['id']])->save($postData);
@@ -312,8 +312,8 @@ class WxpayService extends BaseService
                     $postData = [
                         'status'            => WxpayRefundModel::STATUS_YES,
                         'refund_result'     => json_encode($refundRes),
-                        'next_process_time' => time() + (empty($nextProcessTimeArray[$refundOrder['next_process_count']]) ? 86400 : $nextProcessTimeArray[$refundOrder['next_process_count']]),
-                        'process_count'     => $refundOrder['next_process_count'] + 1,
+                        'next_process_time' => time() + (empty($nextProcessTimeArray[$refundOrder['process_count']]) ? 86400 : $nextProcessTimeArray[$refundOrder['process_count']]),
+                        'process_count'     => $refundOrder['process_count'] + 1,
                         'update_time'       => time()
                     ];
                     $wxpayRefundModel->where(['id' => $refundOrder['id']])->save($postData);
@@ -321,8 +321,8 @@ class WxpayService extends BaseService
                     $postData = [
                         'status'            => WxpayRefundModel::STATUS_NO,
                         'refund_result'     => json_encode($refundRes),
-                        'next_process_time' => time() + (empty($nextProcessTimeArray[$refundOrder['next_process_count']]) ? 86400 : $nextProcessTimeArray[$refundOrder['next_process_count']]),
-                        'process_count'     => $refundOrder['next_process_count'] + 1,
+                        'next_process_time' => time() + (empty($nextProcessTimeArray[$refundOrder['process_count']]) ? 86400 : $nextProcessTimeArray[$refundOrder['process_count']]),
+                        'process_count'     => $refundOrder['process_count'] + 1,
                         'update_time'       => time()
                     ];
                     $wxpayRefundModel->where(['id' => $refundOrder['id']])->save($postData);
@@ -331,8 +331,8 @@ class WxpayService extends BaseService
                 $postData = [
                     'status'            => WxpayRefundModel::STATUS_NO,
                     'refund_result'     => $exception->getMessage(),
-                    'next_process_time' => time() + (empty($nextProcessTimeArray[$refundOrder['next_process_count']]) ? 86400 : $nextProcessTimeArray[$refundOrder['next_process_count']]),
-                    'process_count'     => $refundOrder['next_process_count'] + 1,
+                    'next_process_time' => time() + (empty($nextProcessTimeArray[$refundOrder['process_count']]) ? 86400 : $nextProcessTimeArray[$refundOrder['process_count']]),
+                    'process_count'     => $refundOrder['process_count'] + 1,
                     'update_time'       => time()
                 ];
                 $wxpayRefundModel->where(['id' => $refundOrder['id']])->save($postData);

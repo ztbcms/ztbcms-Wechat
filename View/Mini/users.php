@@ -143,7 +143,7 @@
                     totalItems: 0
                 },
                 mounted() {
-                    this.getUsers();
+                    this.getRefunds();
                 },
                 methods: {
                     deleteEvent(row) {
@@ -160,7 +160,7 @@
                                 _this.httpPost('{:U("Wechat/Mini/deleteUsers")}', postData, function (res) {
                                     if (res.status) {
                                         _this.$message.success('删除成功');
-                                        _this.getUsers();
+                                        _this.getRefunds();
                                     } else {
                                         _this.$message.error(res.msg);
                                     }
@@ -171,13 +171,13 @@
                     },
                     searchEvent() {
                         this.page = 1;
-                        this.getUsers();
+                        this.getRefunds();
                     },
                     currentChangeEvent(page) {
                         this.page = page;
-                        this.getUsers();
+                        this.getRefunds();
                     },
-                    getUsers: function () {
+                    getRefunds: function () {
                         var _this = this;
                         var where = Object.assign({
                             page: this.page,
