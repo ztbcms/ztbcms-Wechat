@@ -29,8 +29,8 @@ class ServerController extends Base
                         $officeService->handleEventMessage($message);
                         break;
                 }
-                return true;
             });
+            $officeService->app->server->serve()->send();
         } catch (\Exception $exception) {
             echo $exception->getMessage();
         }
