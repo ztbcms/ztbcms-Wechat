@@ -111,8 +111,10 @@ class MiniTemplateService extends MiniService
                 $miniTemplateListModel = new MiniTemplateListModel();
                 $isExist = $miniTemplateListModel->where(['template_id' => $template['template_id']])->find();
                 if ($isExist) {
+                    $postData['update_time'] = time();
                     $miniTemplateListModel->where(['template_id' => $template['template_id']])->save($postData);
                 } else {
+                    $postData['create_time'] = time();
                     $miniTemplateListModel->add($postData);
                 }
             }

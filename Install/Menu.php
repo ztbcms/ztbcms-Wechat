@@ -29,10 +29,73 @@ return [
                 "name"   => "小程序",
                 "child"  => [
                     [
-                        "route"  => "Wechat/Wechat/users",
+                        "route"  => "Wechat/Mini/users",
                         "type"   => 0,
                         "status" => 1,
                         "name"   => "授权用户",
+                    ],
+                    [
+                        "route"  => "Wechat/Mini/codeList",
+                        "type"   => 0,
+                        "status" => 1,
+                        "name"   => "小程序码",
+                    ], [
+                        "route"  => "Wechat/Mini/templateList",
+                        "type"   => 0,
+                        "status" => 1,
+                        "name"   => "消息模板",
+                    ]
+                ]
+            ], [
+                "route"  => "Wechat/Office/index",
+                "type"   => 0,
+                "status" => 1,
+                "name"   => "公众号",
+                "child"  => [
+                    [
+                        "route"  => "Wechat/Office/users",
+                        "type"   => 0,
+                        "status" => 1,
+                        "name"   => "授权用户",
+                    ],
+                    [
+                        "route"  => "Wechat/Office/qrcodeList",
+                        "type"   => 0,
+                        "status" => 1,
+                        "name"   => "参数二维码",
+                    ], [
+                        "route"  => "Wechat/Office/templateList",
+                        "type"   => 0,
+                        "status" => 1,
+                        "name"   => "消息模板",
+                    ]
+                ]
+            ], [
+                "route"  => "Wechat/Wxpay/index",
+                "type"   => 0,
+                "status" => 1,
+                "name"   => "微信支付",
+                "child"  => [
+                    [
+                        "route"  => "Wechat/Wxpay/orders",
+                        "type"   => 0,
+                        "status" => 1,
+                        "name"   => "支付订单",
+                    ], [
+                        "route"  => "Wechat/Wxpay/refunds",
+                        "type"   => 0,
+                        "status" => 1,
+                        "name"   => "退款订单",
+                    ], [
+                        "route"  => "Wechat/Wxpay/redpacks",
+                        "type"   => 0,
+                        "status" => 1,
+                        "name"   => "发送红包",
+                    ], [
+                        "route"  => "Wechat/Wxpay/mchpays",
+                        "type"   => 0,
+                        "status" => 1,
+                        "name"   => "企业付款",
                     ]
                 ]
             ],

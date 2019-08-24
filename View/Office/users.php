@@ -3,7 +3,7 @@
     <div id="app">
         <el-card>
             <div slot="header" class="clearfix">
-                <span>小程序用户列表</span>
+                <span>公众号用户列表</span>
             </div>
             <div>
                 <el-form :inline="true" :model="searchData" class="demo-form-inline">
@@ -23,78 +23,78 @@
             </div>
             <div>
                 <el-table
-                        :data="users"
-                        border
-                        style="width: 100%">
+                    :data="users"
+                    border
+                    style="width: 100%">
                     <el-table-column
-                            prop="app_id"
-                            align="center"
-                            label="appid"
-                            min-width="180">
+                        prop="app_id"
+                        align="center"
+                        label="appid"
+                        min-width="180">
                     </el-table-column>
                     <el-table-column
-                            label="头像"
-                            align="center"
-                            min-width="100">
+                        label="头像"
+                        align="center"
+                        min-width="100">
                         <template slot-scope="scope">
                             <img class="avatar" :src="scope.row.avatar_url" alt="">
                         </template>
                     </el-table-column>
                     <el-table-column
-                            prop="nick_name"
-                            label="昵称"
-                            align="center"
-                            min-width="180">
+                        prop="nick_name"
+                        label="昵称"
+                        align="center"
+                        min-width="180">
                     </el-table-column>
                     <el-table-column
-                            prop="country"
-                            label="国家"
-                            align="center"
-                            min-width="100">
+                        prop="country"
+                        label="国家"
+                        align="center"
+                        min-width="100">
                     </el-table-column>
                     <el-table-column
-                            prop="province"
-                            label="省份"
-                            align="center"
-                            min-width="100">
+                        prop="province"
+                        label="省份"
+                        align="center"
+                        min-width="100">
                     </el-table-column>
                     <el-table-column
-                            prop="city"
-                            label="城市"
-                            align="center"
-                            min-width="100">
+                        prop="city"
+                        label="城市"
+                        align="center"
+                        min-width="100">
                     </el-table-column>
                     <el-table-column
-                            prop="language"
-                            label="语言"
-                            align="center"
-                            min-width="100">
+                        prop="language"
+                        label="语言"
+                        align="center"
+                        min-width="100">
                     </el-table-column>
                     <el-table-column
-                            prop="open_id"
-                            label="open_id"
-                            align="center"
-                            min-width="250">
+                        prop="open_id"
+                        label="open_id"
+                        align="center"
+                        min-width="250">
                     </el-table-column>
                     <el-table-column
-                            prop="union_id"
-                            label="union_id"
-                            align="center"
-                            min-width="250">
+                        prop="union_id"
+                        label="union_id"
+                        align="center"
+                        min-width="250">
                     </el-table-column>
                     <el-table-column
-                            align="center"
-                            label="创建时间"
-                            min-width="180">
+                        align="center"
+                        label="创建时间"
+                        min-width="180">
                         <template slot-scope="scope">
                             {{scope.row.create_time|getFormatDatetime}}
                         </template>
                     </el-table-column>
                     <el-table-column
-                            fixed="right"
-                            label="操作"
-                            align="center"
-                            min-width="100">
+                        fixed="right"
+                        label="操作"
+                        align="center"
+                        min-width="100">
                         <template slot-scope="scope">
                             <el-button @click="deleteEvent(scope.row)" type="danger">删除</el-button>
                         </template>
@@ -103,13 +103,13 @@
             </div>
             <div class="page-container">
                 <el-pagination
-                        background
-                        :page-size="limit"
-                        :page-count="totalPages"
-                        :current-page="page"
-                        :total="totalItems"
-                        layout="prev, pager, next"
-                        @current-change="currentChangeEvent">
+                    background
+                    :page-size="limit"
+                    :page-count="totalPages"
+                    :current-page="page"
+                    :total="totalItems"
+                    layout="prev, pager, next"
+                    @current-change="currentChangeEvent">
                 </el-pagination>
             </div>
         </el-card>
@@ -157,7 +157,7 @@
                                 if (e !== 'confirm') {
                                     return;
                                 }
-                                _this.httpPost('{:U("Wechat/Mini/deleteUsers")}', postData, function (res) {
+                                _this.httpPost('{:U("Wechat/Office/deleteUsers")}', postData, function (res) {
                                     if (res.status) {
                                         _this.$message.success('删除成功');
                                         _this.getRefunds();
@@ -167,7 +167,6 @@
                                 })
                             }
                         });
-
                     },
                     searchEvent() {
                         this.page = 1;
@@ -184,7 +183,7 @@
                             limit: this.limit
                         }, this.searchData);
                         $.ajax({
-                            url: "{:U('Wechat/Mini/users')}",
+                            url: "{:U('Wechat/Office/users')}",
                             dataType: 'json',
                             type: 'get',
                             data: where,

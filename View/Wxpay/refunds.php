@@ -3,7 +3,7 @@
     <div id="app">
         <el-card>
             <div slot="header" class="clearfix">
-                <span>小程序用户列表</span>
+                <span>退款订单列表</span>
             </div>
             <div>
                 <el-form :inline="true" :model="searchData" class="demo-form-inline">
@@ -13,11 +13,14 @@
                     <el-form-item label="open_id">
                         <el-input v-model="searchData.open_id" placeholder="请输入用户openid"></el-input>
                     </el-form-item>
-                    <el-form-item label="昵称">
-                        <el-input v-model="searchData.nick_name" placeholder="请输入用户昵称"></el-input>
+                    <el-form-item label="订单号">
+                        <el-input v-model="searchData.out_trade_no" placeholder="请输入支付订单号"></el-input>
                     </el-form-item>
                     <el-form-item>
                         <el-button type="primary" @click="searchEvent">查询</el-button>
+                    </el-form-item>
+                    <el-form-item>
+                        <el-button type="primary" @click="handleEvent">调用处理</el-button>
                     </el-form-item>
                 </el-form>
             </div>
@@ -33,54 +36,61 @@
                             min-width="180">
                     </el-table-column>
                     <el-table-column
-                            label="头像"
-                            align="center"
-                            min-width="100">
-                        <template slot-scope="scope">
-                            <img class="avatar" :src="scope.row.avatar_url" alt="">
-                        </template>
-                    </el-table-column>
-                    <el-table-column
-                            prop="nick_name"
-                            label="昵称"
+                            prop="out_trade_no"
+                            label="订单号"
                             align="center"
                             min-width="180">
                     </el-table-column>
                     <el-table-column
-                            prop="country"
-                            label="国家"
+                            prop="out_refund_no"
+                            label="退款单号"
                             align="center"
-                            min-width="100">
+                            min-width="180">
                     </el-table-column>
                     <el-table-column
-                            prop="province"
-                            label="省份"
+                            label="总支付金额"
                             align="center"
                             min-width="100">
+                        <template slot-scope="scope">
+                            <div>{{ scope.row.total_fee/100 }}</div>
+                        </template>
                     </el-table-column>
                     <el-table-column
-                            prop="city"
-                            label="城市"
+                            label="退款金额"
                             align="center"
                             min-width="100">
+                        <template slot-scope="scope">
+                            <div>{{ scope.row.refund_fee/100 }}</div>
+                        </template>
                     </el-table-column>
                     <el-table-column
-                            prop="language"
-                            label="语言"
-                            align="center"
-                            min-width="100">
-                    </el-table-column>
-                    <el-table-column
-                            prop="open_id"
-                            label="open_id"
+                            prop="refund_description"
+                            label="退款描述"
                             align="center"
                             min-width="250">
                     </el-table-column>
                     <el-table-column
-                            prop="union_id"
-                            label="union_id"
+                            label="处理状态"
                             align="center"
-                            min-width="250">
+                            min-width="100">
+                        <template slot-scope="scope">
+                            <div v-if="scope.row.status==1">已完成</div>
+                            <div v-else>未完成</div>
+                        </template>
+                    </el-table-column>
+                    <el-table-column
+                            prop="process_count"
+                            label="处理次数"
+                            align="center"
+                            min-width="100">
+                    </el-table-column>
+                    <el-table-column
+                            align="center"
+                            label="下次处理时间"
+                            min-width="180">
+                        <template slot-scope="scope">
+                            {{scope.row.next_process_time|getFormatDatetime}}
+                        </template>
                     </el-table-column>
                     <el-table-column
                             align="center"
@@ -91,11 +101,20 @@
                         </template>
                     </el-table-column>
                     <el-table-column
+                            align="center"
+                            label="更新时间"
+                            min-width="180">
+                        <template slot-scope="scope">
+                            {{scope.row.update_time|getFormatDatetime}}
+                        </template>
+                    </el-table-column>
+                    <el-table-column
                             fixed="right"
                             label="操作"
                             align="center"
-                            min-width="100">
+                            min-width="200">
                         <template slot-scope="scope">
+                            <el-button @click="detailEvent(scope.row.refund_result)" type="primary">结果</el-button>
                             <el-button @click="deleteEvent(scope.row)" type="danger">删除</el-button>
                         </template>
                     </el-table-column>
@@ -113,6 +132,18 @@
                 </el-pagination>
             </div>
         </el-card>
+        <el-dialog
+                size="small"
+                :visible.sync="detailDialogVisible"
+                width="600px">
+            <el-form ref="form" size="small" label-width="140px">
+                <div v-for="(item,key) in resultDetail">
+                    <el-form-item v-if="item" :label="key">
+                        {{ item }}
+                    </el-form-item>
+                </div>
+            </el-form>
+        </el-dialog>
     </div>
     <style>
         .avatar {
@@ -134,18 +165,31 @@
                     searchData: {
                         open_id: "",
                         app_id: "",
-                        nick_name: ""
+                        out_trade_no: ""
                     },
                     users: [],
                     page: 1,
                     limit: 20,
                     totalPages: 0,
-                    totalItems: 0
+                    totalItems: 0,
+                    resultDetail: {},
+                    detailDialogVisible: false
                 },
                 mounted() {
                     this.getRefunds();
                 },
                 methods: {
+                    handleEvent() {
+                        let _this = this;
+                        this.httpPost('{:U("Wechat/Wxpay/handleRefund")}', {}, function (res) {
+                            if (res.status) {
+                                _this.$message.success('处理成功');
+                                _this.getRefunds();
+                            } else {
+                                this.$message.error(res.msg);
+                            }
+                        })
+                    },
                     deleteEvent(row) {
                         var postData = {
                             id: row.id
@@ -157,7 +201,7 @@
                                 if (e !== 'confirm') {
                                     return;
                                 }
-                                _this.httpPost('{:U("Wechat/Mini/deleteUsers")}', postData, function (res) {
+                                _this.httpPost('{:U("Wechat/Wxpay/deleteRefund")}', postData, function (res) {
                                     if (res.status) {
                                         _this.$message.success('删除成功');
                                         _this.getRefunds();
@@ -168,6 +212,13 @@
                             }
                         });
 
+                    },
+                    detailEvent(refund_result) {
+                        console.log('refund_result', refund_result);
+                        if (refund_result) {
+                            this.resultDetail = JSON.parse(refund_result);
+                        }
+                        this.detailDialogVisible = true;
                     },
                     searchEvent() {
                         this.page = 1;
@@ -184,7 +235,7 @@
                             limit: this.limit
                         }, this.searchData);
                         $.ajax({
-                            url: "{:U('Wechat/Mini/users')}",
+                            url: "{:U('Wechat/Wxpay/refunds')}",
                             dataType: 'json',
                             type: 'get',
                             data: where,

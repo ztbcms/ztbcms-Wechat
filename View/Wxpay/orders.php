@@ -3,7 +3,7 @@
     <div id="app">
         <el-card>
             <div slot="header" class="clearfix">
-                <span>小程序用户列表</span>
+                <span>支付订单列表</span>
             </div>
             <div>
                 <el-form :inline="true" :model="searchData" class="demo-form-inline">
@@ -13,8 +13,8 @@
                     <el-form-item label="open_id">
                         <el-input v-model="searchData.open_id" placeholder="请输入用户openid"></el-input>
                     </el-form-item>
-                    <el-form-item label="昵称">
-                        <el-input v-model="searchData.nick_name" placeholder="请输入用户昵称"></el-input>
+                    <el-form-item label="订单号">
+                        <el-input v-model="searchData.out_trade_no" placeholder="请输入支付订单号"></el-input>
                     </el-form-item>
                     <el-form-item>
                         <el-button type="primary" @click="searchEvent">查询</el-button>
@@ -33,42 +33,36 @@
                             min-width="180">
                     </el-table-column>
                     <el-table-column
-                            label="头像"
+                            prop="mch_id"
+                            label="mch_id"
                             align="center"
                             min-width="100">
+                    </el-table-column>
+                    <el-table-column
+                            label="result_code"
+                            align="center"
+                            min-width="180">
                         <template slot-scope="scope">
-                            <img class="avatar" :src="scope.row.avatar_url" alt="">
+                            <div>{{ scope.row.result_code }}</div>
+                            <div>{{ scope.row.err_code }}</div>
+                            <div>{{ scope.row.err_code_des }}</div>
                         </template>
                     </el-table-column>
                     <el-table-column
-                            prop="nick_name"
-                            label="昵称"
-                            align="center"
-                            min-width="180">
-                    </el-table-column>
-                    <el-table-column
-                            prop="country"
-                            label="国家"
+                            label="总支付金额"
                             align="center"
                             min-width="100">
+                        <template slot-scope="scope">
+                            <div>{{ scope.row.total_fee/100 }}</div>
+                        </template>
                     </el-table-column>
                     <el-table-column
-                            prop="province"
-                            label="省份"
+                            label="支付现金"
                             align="center"
                             min-width="100">
-                    </el-table-column>
-                    <el-table-column
-                            prop="city"
-                            label="城市"
-                            align="center"
-                            min-width="100">
-                    </el-table-column>
-                    <el-table-column
-                            prop="language"
-                            label="语言"
-                            align="center"
-                            min-width="100">
+                        <template slot-scope="scope">
+                            <div>{{ scope.row.cash_fee/100 }}</div>
+                        </template>
                     </el-table-column>
                     <el-table-column
                             prop="open_id"
@@ -77,8 +71,14 @@
                             min-width="250">
                     </el-table-column>
                     <el-table-column
-                            prop="union_id"
-                            label="union_id"
+                            prop="out_trade_no"
+                            label="订单号"
+                            align="center"
+                            min-width="250">
+                    </el-table-column>
+                    <el-table-column
+                            prop="notify_url"
+                            label="回调地址"
                             align="center"
                             min-width="250">
                     </el-table-column>
@@ -88,6 +88,14 @@
                             min-width="180">
                         <template slot-scope="scope">
                             {{scope.row.create_time|getFormatDatetime}}
+                        </template>
+                    </el-table-column>
+                    <el-table-column
+                            align="center"
+                            label="更新时间"
+                            min-width="180">
+                        <template slot-scope="scope">
+                            {{scope.row.update_time|getFormatDatetime}}
                         </template>
                     </el-table-column>
                     <el-table-column
@@ -134,7 +142,7 @@
                     searchData: {
                         open_id: "",
                         app_id: "",
-                        nick_name: ""
+                        out_trade_no: ""
                     },
                     users: [],
                     page: 1,
@@ -143,7 +151,7 @@
                     totalItems: 0
                 },
                 mounted() {
-                    this.getRefunds();
+                    this.getOrders();
                 },
                 methods: {
                     deleteEvent(row) {
@@ -157,10 +165,10 @@
                                 if (e !== 'confirm') {
                                     return;
                                 }
-                                _this.httpPost('{:U("Wechat/Mini/deleteUsers")}', postData, function (res) {
+                                _this.httpPost('{:U("Wechat/Wxpay/deleteOrder")}', postData, function (res) {
                                     if (res.status) {
                                         _this.$message.success('删除成功');
-                                        _this.getRefunds();
+                                        _this.getOrders();
                                     } else {
                                         _this.$message.error(res.msg);
                                     }
@@ -171,20 +179,20 @@
                     },
                     searchEvent() {
                         this.page = 1;
-                        this.getRefunds();
+                        this.getOrders();
                     },
                     currentChangeEvent(page) {
                         this.page = page;
-                        this.getRefunds();
+                        this.getOrders();
                     },
-                    getRefunds: function () {
+                    getOrders: function () {
                         var _this = this;
                         var where = Object.assign({
                             page: this.page,
                             limit: this.limit
                         }, this.searchData);
                         $.ajax({
-                            url: "{:U('Wechat/Mini/users')}",
+                            url: "{:U('Wechat/Wxpay/orders')}",
                             dataType: 'json',
                             type: 'get',
                             data: where,

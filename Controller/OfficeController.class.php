@@ -2,62 +2,54 @@
 /**
  * Created by PhpStorm.
  * User: zhlhuang
- * Date: 2019-07-19
- * Time: 09:35.
+ * Date: 2019-08-21
+ * Time: 16:41.
  */
 
 namespace Wechat\Controller;
 
 
 use Common\Controller\AdminBase;
-use Wechat\Model\MiniCodeModel;
-use Wechat\Model\MiniTemplateListModel;
-use Wechat\Model\MiniUsersModel;
+use Wechat\Model\OfficeQrcodeModel;
 use Wechat\Model\OfficesModel;
-use Wechat\Service\MiniCodeService;
-use Wechat\Service\MiniTemplateService;
+use Wechat\Model\OfficeTemplateListModel;
+use Wechat\Model\OfficeUsersModel;
+use Wechat\Service\OfficeQrcodeService;
+use Wechat\Service\OfficeTemplateService;
 
-class MiniController extends AdminBase
+class OfficeController extends AdminBase
 {
+
     /**
      * 创建小程序码
-     *
-     * @throws \EasyWeChat\Kernel\Exceptions\InvalidArgumentException
-     * @throws \EasyWeChat\Kernel\Exceptions\InvalidConfigException
-     * @throws \EasyWeChat\Kernel\Exceptions\RuntimeException
-     * @throws \Think\Exception
      */
-    function createCode()
+    function createQrcode()
     {
         $appId = I('post.app_id');
         $type = I('post.type');
-        $path = I('post.path');
-        $scene = I('post.scene');
-        $miniCodeService = new MiniCodeService($appId);
-        if ($type == MiniCodeModel::CODE_TYPE_LIMIT) {
-            $res = $miniCodeService->getMiniCode($path.$scene);
+        $expireTime = I('post.expire_time');
+        $param = I('post.param');
+        $officeQrcodeService = new OfficeQrcodeService($appId);
+        if ($type == OfficeQrcodeModel::QRCODE_TYPE_TEMPORARY) {
+            //将过期时间转化成秒
+            $expireTime = $expireTime * 86400;
+            $res = $officeQrcodeService->temporary($param, $expireTime);
         } else {
-            $opstional = [];
-            if ($path) {
-                $opstional['page'] = $path;
-            }
-            $res = $miniCodeService->getUnlimitMiniCode($scene, $opstional);
+            $res = $officeQrcodeService->forever($param);
         }
         $this->ajaxReturn($res);
     }
 
     /**
      * 删除小程序码
-     *
-     * @throws \Think\Exception
      */
     function deleteCode()
     {
         $id = I('post.id');
-        $miniCodeModel = new MiniCodeModel();
-        $miniCode = $miniCodeModel->where(['id' => $id])->find();
+        $officeQrcodeModel = new OfficeQrcodeModel();
+        $miniCode = $officeQrcodeModel->where(['id' => $id])->find();
         if ($miniCode) {
-            $res = $miniCodeModel->where(['id' => $miniCode['id']])->delete();
+            $res = $officeQrcodeModel->where(['id' => $miniCode['id']])->delete();
             if ($res) {
                 $this->ajaxReturn(self::createReturn(true, [], '删除成功'));
             } else {
@@ -68,10 +60,7 @@ class MiniController extends AdminBase
         }
     }
 
-    /**
-     * 获取小程序码
-     */
-    function codeList()
+    function qrcodeList()
     {
         if (IS_AJAX) {
             $appId = I('get.app_id', '');
@@ -81,19 +70,16 @@ class MiniController extends AdminBase
             if ($appId) {
                 $where['app_id'] = ['like', '%'.$appId.'%'];
             }
-            $miniCodeModel = new MiniCodeModel();
-            $res = $miniCodeModel->where($where)->page($page, $limit)->order('id DESC')->select();
-            $totalCount = $miniCodeModel->where($where)->count();
+            $officeQrcodeModel = new OfficeQrcodeModel();
+            $res = $officeQrcodeModel->where($where)->page($page, $limit)->order('id DESC')->select();
+            $totalCount = $officeQrcodeModel->where($where)->count();
             $this->ajaxReturn(self::createReturnList(true, $res ? $res : [], $page, $limit, $totalCount, ceil($totalCount / $limit), '获取成功'));
         }
-        $this->display('codelist');
+        $this->display('qrcodelist');
     }
 
     /**
      * 发送模板消息测试
-     *
-     * @throws \EasyWeChat\Kernel\Exceptions\InvalidArgumentException
-     * @throws \Think\Exception
      */
     function sendTemplateMsg()
     {
@@ -102,27 +88,34 @@ class MiniController extends AdminBase
         $templateId = I('post.template_id');
         $keywords = I('post.keywords');
         $page = I('post.page');
+        $pageType = I('post.page_type');
+        $miniAppid = I('post.mini_appid');
         $sendData = [];
         foreach ($keywords as $keyword) {
             $sendData[$keyword['key']] = $keyword['value'];
         }
-        $templateService = new MiniTemplateService($appId);
-        $res = $templateService->sendTemplateMessage($touserOpenid, $templateId, $page, $sendData);
+        $miniProgram = [];
+        if ($pageType == 'mini') {
+            $miniProgram = [
+                'appid'    => $miniAppid,
+                'pagepath' => $page
+            ];
+        }
+        $templateService = new OfficeTemplateService($appId);
+        $res = $templateService->sendTemplateMsg($touserOpenid, $templateId, $sendData, $page, $miniProgram);
         $this->ajaxReturn($res);
     }
 
     /**
      * 删除消息模板
-     *
-     * @throws \Think\Exception
      */
     function deleteTemplate()
     {
         $id = I('post.id');
-        $miniTemplateModel = new MiniTemplateListModel();
-        $template = $miniTemplateModel->where(['id' => $id])->find();
+        $officeTemplateListModel = new OfficeTemplateListModel();
+        $template = $officeTemplateListModel->where(['id' => $id])->find();
         if ($template) {
-            $res = $miniTemplateModel->where(['id' => $template['id']])->delete();
+            $res = $officeTemplateListModel->where(['id' => $template['id']])->delete();
             if ($res) {
                 $this->ajaxReturn(self::createReturn(true, [], '删除成功'));
             } else {
@@ -135,26 +128,20 @@ class MiniController extends AdminBase
 
     /**
      * 同步消息模板
-     *
-     * @throws \EasyWeChat\Kernel\Exceptions\InvalidConfigException
-     * @throws \Think\Exception
      */
     function syncTemplateList()
     {
-        //获取所有的小程序
-        $miniOfiiceModel = new OfficesModel();
-        $minioffices = $miniOfiiceModel->where(['account_type' => OfficesModel::ACCOUNT_TYPE_MINI])->field("app_id")->select();
+        //获取所有的公众号
+        $ofiiceModel = new OfficesModel();
+        $minioffices = $ofiiceModel->where(['account_type' => OfficesModel::ACCOUNT_TYPE_OFFICE])->field("app_id")->select();
         foreach ($minioffices as $minioffice) {
             $appId = $minioffice['app_id'];
-            $templateService = new MiniTemplateService($appId);
+            $templateService = new OfficeTemplateService($appId);
             $templateService->getTemplateList();
         }
         $this->ajaxReturn(self::createReturn(true, [], '同步成功'));
     }
 
-    /**
-     * 展示消息模板列表
-     */
     function templateList()
     {
         if (IS_AJAX) {
@@ -169,18 +156,16 @@ class MiniController extends AdminBase
             if ($title) {
                 $where['title'] = ['like', '%'.$title.'%'];
             }
-            $miniTemplateModel = new MiniTemplateListModel();
-            $res = $miniTemplateModel->where($where)->page($page, $limit)->order('id DESC')->select();
-            $totalCount = $miniTemplateModel->where($where)->count();
+            $officeTemplateModel = new OfficeTemplateListModel();
+            $res = $officeTemplateModel->where($where)->page($page, $limit)->order('id DESC')->select();
+            $totalCount = $officeTemplateModel->where($where)->count();
             $this->ajaxReturn(self::createReturnList(true, $res ? $res : [], $page, $limit, $totalCount, ceil($totalCount / $limit), '获取成功'));
         }
         $this->display('templatelist');
     }
 
     /**
-     * 获取用户信息
-     *
-     * @throws \Think\Exception
+     * 获取用户列表
      */
     function users()
     {
@@ -200,26 +185,25 @@ class MiniController extends AdminBase
             if ($nickName) {
                 $where['nick_name'] = ['like', '%'.$nickName.'%'];
             }
-            $miniUsersModel = new MiniUsersModel();
-            $res = $miniUsersModel->where($where)->page($page, $limit)->order('id DESC')->select();
-            $totalCount = $miniUsersModel->where($where)->count();
+            $officeUsersModel = new OfficeUsersModel();
+            $res = $officeUsersModel->where($where)->page($page, $limit)->order('id DESC')->select();
+            $totalCount = $officeUsersModel->where($where)->count();
             $this->ajaxReturn(self::createReturnList(true, $res ? $res : [], $page, $limit, $totalCount, ceil($totalCount / $limit), '获取成功'));
         }
-        $this->display();
+        $this->display('users');
     }
+
 
     /**
      * 删除用户
-     *
-     * @throws \Think\Exception
      */
     function deleteUsers()
     {
         $id = I('post.id', 0);
-        $miniUsersModel = new MiniUsersModel();
-        $user = $miniUsersModel->where(['id' => $id])->find();
+        $officeUsersModel = new OfficeUsersModel();
+        $user = $officeUsersModel->where(['id' => $id])->find();
         if ($user) {
-            $res = $miniUsersModel->where(['id' => $user['id']])->delete();
+            $res = $officeUsersModel->where(['id' => $user['id']])->delete();
             if ($res) {
                 $this->ajaxReturn(self::createReturn(true, [], '删除成功'));
             } else {
