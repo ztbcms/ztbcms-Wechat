@@ -30,7 +30,8 @@ class OfficeService extends BaseService
             $config = [
                 'app_id'        => $office['app_id'],
                 'secret'        => $office['secret'],
-
+                'token'         => $office['token'],          // Token
+                'aes_key'       => $office['aes_key'],        // EncodingAESKey，兼容与安全模式下请一定要填写！！！
                 // 下面为可选项
                 // 指定 API 调用返回结果的类型：array(default)/collection/object/raw/自定义类名
                 'response_type' => 'array',
