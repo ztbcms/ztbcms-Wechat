@@ -11,6 +11,7 @@ namespace Wechat\Service;
 
 use EasyWeChat\Factory;
 use System\Service\BaseService;
+use Wechat\Model\OfficeEventMessageModel;
 use Wechat\Model\OfficesModel;
 use Think\Exception;
 
@@ -67,5 +68,33 @@ class OfficeService extends BaseService
         } else {
             return self::createReturn(false, [], '获取失败');
         }
+    }
+
+    /**
+     * 处理事件消息
+     *
+     * @param $message
+     *
+     * @throws Exception
+     * @return bool
+     */
+    function handleEventMessage($message)
+    {
+        $postData = [
+            'app_id'         => $this->app_id,
+            'to_user_name'   => $message['ToUserName'],
+            'from_user_name' => $message['FromUserName'],
+            'create_time'    => $message['CreateTime'],
+            'msg_type'       => $message['MsgType'],
+            'event'          => $message['Event'],
+            'event_key'      => empty($message['EventKey']) ? '' : $message['EventKey'],
+            'ticket'         => empty($message['Ticket']) ? '' : $message['Ticket'],
+            'latitude'       => empty($message['Latitude']) ? '' : $message['Latitude'],
+            'longitude'      => empty($message['Longitude']) ? '' : $message['Longitude'],
+            'precision'      => empty($message['Precision']) ? '' : $message['Precision'],
+        ];
+        $officeEventMessageModel = new OfficeEventMessageModel();
+        $res = $officeEventMessageModel->add($postData);
+        return !!$res;
     }
 }
