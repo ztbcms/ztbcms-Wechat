@@ -12,6 +12,7 @@ namespace Wechat\Service;
 use EasyWeChat\Factory;
 use System\Service\BaseService;
 use Wechat\Model\OfficeEventMessageModel;
+use Wechat\Model\OfficeMediaModel;
 use Wechat\Model\OfficeMessageModel;
 use Wechat\Model\OfficesModel;
 use Think\Exception;
@@ -135,5 +136,45 @@ class OfficeService extends BaseService
         $officeMessageModel = new OfficeMessageModel();
         $res = $officeMessageModel->add($postData);
         return !!$res;
+    }
+
+    /**
+     * 保存临时文件的素材
+     *
+     * @param $mediaId
+     *
+     * @return array
+     */
+    function saveMedia($mediaId)
+    {
+        $directory = C("UPLOADFILEPATH").'wechat/media/';
+        if (!is_dir($directory)) {
+            mkdir($directory, 0755, true);
+        }
+        try {
+            $stram = $this->app->media->get($mediaId);
+            if ($stram instanceof \EasyWeChat\Kernel\Http\StreamResponse) {
+                // 以内容 md5 为文件名
+                $fileName = $stram->saveAs($directory, md5($mediaId));
+                $url = cache("Config.sitefileurl").'wechat/qrcode/'.$fileName;
+                $filePath = C("UPLOADFILEPATH").'wechat/qrcode/'.$fileName;
+                $explodeName = explode('.', $filePath);
+                $result = [
+                    'app_id'      => $this->app_id,
+                    'media_id'    => $mediaId,
+                    'file_url'    => $url,
+                    'file_path'   => $filePath,
+                    'file_type'   => $explodeName[1],
+                    'create_time' => time(),
+                ];
+                $officeMediaModel = new OfficeMediaModel();
+                $officeMediaModel->add($result);
+                return self::createReturn(true, $result, '获取成功');
+            } else {
+                return self::createReturn(false, [], '获取失败');
+            }
+        } catch (\Exception $exception) {
+            return self::createReturn(false, [], '获取失败:'.$exception->getMessage());
+        }
     }
 }
