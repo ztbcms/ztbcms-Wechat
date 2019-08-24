@@ -9,6 +9,8 @@ CREATE TABLE `cms_wechat_offices` (
   `key` varchar(128) DEFAULT '' COMMENT '微信支付key',
   `cert_path` varchar(512) DEFAULT '' COMMENT '微信支付公钥',
   `key_path` varchar(512) DEFAULT '' COMMENT '微信支付私钥',
+  `token` varchar(128) DEFAULT '' COMMENT '接收服务消息的token',
+  `aes_key` varchar(64) DEFAULT '' COMMENT '启动开发配置的 aes_key',
   `create_time` int(11) DEFAULT NULL COMMENT '创建时间',
   `update_time` int(11) DEFAULT NULL COMMENT '更新时间',
   PRIMARY KEY (`id`)
@@ -213,4 +215,58 @@ CREATE TABLE `cms_wechat_office_send_template_record` (
   `result` varchar(128) DEFAULT '' COMMENT '调用结果',
   `create_time` int(11) DEFAULT NULL COMMENT '创建时间',
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8mb4;
+) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8mb4;
+
+DROP TABLE IF EXISTS `cms_wechat_office_message`;
+CREATE TABLE `cms_wechat_office_message` (
+  `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
+  `app_id` varchar(64) NOT NULL DEFAULT '',
+  `to_user_name` varchar(128) DEFAULT '' COMMENT '接收用户openId',
+  `from_user_name` varchar(128) DEFAULT '' COMMENT '发送者',
+  `create_time` int(11) DEFAULT '0' COMMENT '发送时间',
+  `msg_type` varchar(32) DEFAULT '' COMMENT '消息类型',
+  `msg_id` varchar(64) DEFAULT '' COMMENT '消息id',
+  `content` varchar(512) DEFAULT '' COMMENT '消息内容',
+  `pic_url` varchar(512) DEFAULT '' COMMENT '图片url',
+  `media_id` varchar(256) DEFAULT '' COMMENT '多媒体id',
+  `format` varchar(32) DEFAULT '' COMMENT '音频格式类型',
+  `recognition` varchar(512) DEFAULT '' COMMENT '语音识别文字',
+  `thumb_media_id` varchar(256) DEFAULT '' COMMENT '缩略图多媒体id',
+  `location_x` varchar(32) DEFAULT '' COMMENT '定位消息纬度',
+  `location_y` varchar(32) DEFAULT '' COMMENT '定位消息经度',
+  `scale` varchar(32) DEFAULT '' COMMENT '定位精确度',
+  `label` varchar(128) DEFAULT '' COMMENT '定位信息的label',
+  `title` varchar(32) DEFAULT '' COMMENT '链接标题',
+  `description` varchar(256) DEFAULT '' COMMENT '链接介绍',
+  `url` varchar(256) DEFAULT '' COMMENT '分享链接url',
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8mb4;
+
+DROP TABLE IF EXISTS `cms_wechat_office_event_message`;
+CREATE TABLE `cms_wechat_office_event_message` (
+  `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
+  `app_id` varchar(64) NOT NULL DEFAULT '',
+  `to_user_name` varchar(128) DEFAULT '' COMMENT '接收用户openId',
+  `from_user_name` varchar(128) DEFAULT '' COMMENT '发送用户',
+  `create_time` int(11) DEFAULT NULL COMMENT '发送时间',
+  `msg_type` varchar(32) DEFAULT '' COMMENT '消息类型',
+  `event` varchar(32) DEFAULT '' COMMENT '事件类型',
+  `event_key` varchar(64) DEFAULT '' COMMENT '事件关键词',
+  `ticket` varchar(64) DEFAULT '' COMMENT '事件ticket',
+  `latitude` varchar(32) DEFAULT '' COMMENT '地理位置纬度',
+  `longitude` varchar(32) DEFAULT '' COMMENT '地理位置经度',
+  `precision` varchar(32) DEFAULT '' COMMENT '地址位置精确度',
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8mb4;
+
+DROP TABLE IF EXISTS `cms_wechat_office_media`;
+CREATE TABLE `cms_wechat_office_media` (
+  `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
+  `app_id` varchar(64) DEFAULT '',
+  `media_id` varchar(128) DEFAULT '' COMMENT '媒体id',
+  `file_url` varchar(512) DEFAULT '' COMMENT '文件url',
+  `file_path` varchar(512) DEFAULT '' COMMENT '文件路径',
+  `file_type` varchar(32) DEFAULT '' COMMENT '文件类型',
+  `create_time` int(11) DEFAULT '0' COMMENT '创建时间',
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8mb4;
