@@ -3,7 +3,7 @@
     <div id="app">
         <el-card>
             <div slot="header" class="clearfix">
-                <span>退款订单列表</span>
+                <span>红包发送列表</span>
             </div>
             <div>
                 <el-form :inline="true" :model="searchData" class="demo-form-inline">
@@ -14,7 +14,7 @@
                         <el-input v-model="searchData.open_id" placeholder="请输入用户openid"></el-input>
                     </el-form-item>
                     <el-form-item label="订单号">
-                        <el-input v-model="searchData.out_trade_no" placeholder="请输入支付订单号"></el-input>
+                        <el-input v-model="searchData.mch_billno" placeholder="请输入订单号"></el-input>
                     </el-form-item>
                     <el-form-item>
                         <el-button type="primary" @click="searchEvent">查询</el-button>
@@ -36,14 +36,8 @@
                             min-width="180">
                     </el-table-column>
                     <el-table-column
-                            prop="out_trade_no"
+                            prop="mch_billno"
                             label="订单号"
-                            align="center"
-                            min-width="180">
-                    </el-table-column>
-                    <el-table-column
-                            prop="out_refund_no"
-                            label="退款单号"
                             align="center"
                             min-width="180">
                     </el-table-column>
@@ -54,26 +48,28 @@
                             min-width="250">
                     </el-table-column>
                     <el-table-column
-                            label="总支付金额"
+                            label="发放金额"
                             align="center"
                             min-width="100">
                         <template slot-scope="scope">
-                            <div>{{ scope.row.total_fee/100 }}</div>
+                            <div>{{ scope.row.total_amount/100 }}</div>
                         </template>
                     </el-table-column>
                     <el-table-column
-                            label="退款金额"
-                            align="center"
-                            min-width="100">
-                        <template slot-scope="scope">
-                            <div>{{ scope.row.refund_fee/100 }}</div>
-                        </template>
-                    </el-table-column>
-                    <el-table-column
-                            prop="refund_description"
-                            label="退款描述"
+                            label="红包信息"
                             align="center"
                             min-width="250">
+                        <template slot-scope="scope">
+                            <div><b>发送者</b>：{{ scope.row.send_name }}</div>
+                            <div><b>祝福语</b>：{{ scope.row.wishing }}</div>
+                            <div><b>活动名称</b>：{{ scope.row.act_name }}</div>
+                        </template>
+                    </el-table-column>
+                    <el-table-column
+                            prop="process_count"
+                            label="处理次数"
+                            align="center"
+                            min-width="100">
                     </el-table-column>
                     <el-table-column
                             label="处理状态"
@@ -83,12 +79,6 @@
                             <div v-if="scope.row.status==1">已完成</div>
                             <div v-else>未完成</div>
                         </template>
-                    </el-table-column>
-                    <el-table-column
-                            prop="process_count"
-                            label="处理次数"
-                            align="center"
-                            min-width="100">
                     </el-table-column>
                     <el-table-column
                             align="center"
@@ -120,7 +110,7 @@
                             align="center"
                             min-width="200">
                         <template slot-scope="scope">
-                            <el-button @click="detailEvent(scope.row.refund_result)" type="primary">结果</el-button>
+                            <el-button @click="detailEvent(scope.row.send_result)" type="primary">结果</el-button>
                             <el-button @click="deleteEvent(scope.row)" type="danger">删除</el-button>
                         </template>
                     </el-table-column>
@@ -171,7 +161,7 @@
                     searchData: {
                         open_id: "",
                         app_id: "",
-                        out_trade_no: ""
+                        mch_billno: ""
                     },
                     users: [],
                     page: 1,
@@ -182,15 +172,15 @@
                     detailDialogVisible: false
                 },
                 mounted() {
-                    this.getRefunds();
+                    this.getRedpacks();
                 },
                 methods: {
                     handleEvent() {
                         let _this = this;
-                        this.httpPost('{:U("Wechat/Wxpay/handleRefund")}', {}, function (res) {
+                        this.httpPost('{:U("Wechat/Wxpay/handleRedpack")}', {}, function (res) {
                             if (res.status) {
                                 _this.$message.success('处理成功');
-                                _this.getRefunds();
+                                _this.getRedpacks();
                             } else {
                                 this.$message.error(res.msg);
                             }
@@ -207,10 +197,10 @@
                                 if (e !== 'confirm') {
                                     return;
                                 }
-                                _this.httpPost('{:U("Wechat/Wxpay/deleteRefund")}', postData, function (res) {
+                                _this.httpPost('{:U("Wechat/Wxpay/deleteRedpacks")}', postData, function (res) {
                                     if (res.status) {
                                         _this.$message.success('删除成功');
-                                        _this.getRefunds();
+                                        _this.getRedpacks();
                                     } else {
                                         _this.$message.error(res.msg);
                                     }
@@ -228,20 +218,20 @@
                     },
                     searchEvent() {
                         this.page = 1;
-                        this.getRefunds();
+                        this.getRedpacks();
                     },
                     currentChangeEvent(page) {
                         this.page = page;
-                        this.getRefunds();
+                        this.getRedpacks();
                     },
-                    getRefunds: function () {
+                    getRedpacks: function () {
                         var _this = this;
                         var where = Object.assign({
                             page: this.page,
                             limit: this.limit
                         }, this.searchData);
                         $.ajax({
-                            url: "{:U('Wechat/Wxpay/refunds')}",
+                            url: "{:U('Wechat/Wxpay/redpacks')}",
                             dataType: 'json',
                             type: 'get',
                             data: where,
