@@ -12,6 +12,7 @@ namespace Wechat\Service;
 use EasyWeChat\Factory;
 use System\Service\BaseService;
 use Wechat\Model\OfficeEventMessageModel;
+use Wechat\Model\OfficeMessageModel;
 use Wechat\Model\OfficesModel;
 use Think\Exception;
 
@@ -96,6 +97,43 @@ class OfficeService extends BaseService
         ];
         $officeEventMessageModel = new OfficeEventMessageModel();
         $res = $officeEventMessageModel->add($postData);
+        return !!$res;
+    }
+
+    /**
+     *  处理普通消息
+     *
+     * @param $message
+     *
+     * @throws Exception
+     * @return bool
+     */
+    function handleMessage($message)
+    {
+        $postData = [
+            'app_id'         => $this->app_id,
+            'to_user_name'   => $message['ToUserName'],
+            'from_user_name' => $message['FromUserName'],
+            'create_time'    => $message['CreateTime'],
+            'msg_type'       => $message['MsgType'],
+            'msg_id'         => $message['MsgId'],
+            'content'        => empty($message['Content']) ? '' : $message['Content'],
+            'pic_url'        => empty($message['PicUrl']) ? '' : $message['PicUrl'],
+            'media_id'       => empty($message['MediaId']) ? '' : $message['MediaId'],
+            'format'         => empty($message['Format']) ? '' : $message['Format'],
+            'recognition'    => empty($message['Recognition']) ? '' : $message['Recognition'],
+            'thumb_media_id' => empty($message['ThumbMediaId']) ? '' : $message['ThumbMediaId'],
+            'location_x'     => empty($message['Location_X']) ? '' : $message['Location_X'],
+            'location_y'     => empty($message['Location_Y']) ? '' : $message['Location_Y'],
+            'scale'          => empty($message['Scale']) ? '' : $message['Scale'],
+            'label'          => empty($message['Label']) ? '' : $message['Label'],
+            'title'          => empty($message['Title']) ? '' : $message['Title'],
+            'description'    => empty($message['Description']) ? '' : $message['Description'],
+            'url'            => empty($message['Url']) ? '' : $message['Url'],
+        ];
+
+        $officeMessageModel = new OfficeMessageModel();
+        $res = $officeMessageModel->add($postData);
         return !!$res;
     }
 }

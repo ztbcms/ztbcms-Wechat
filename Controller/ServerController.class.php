@@ -28,6 +28,10 @@ class ServerController extends Base
                     case 'event':
                         $officeService->handleEventMessage($message);
                         break;
+                    default:
+                        //其他消息形式都归到消息处理
+                        $officeService->handleMessage($message);
+                        break;
                 }
             });
             $officeService->app->server->serve()->send();
