@@ -70,55 +70,69 @@
                 </el-table>
             </div>
         </el-card>
-
         <!-- 添加-->
         <el-dialog width="600px" :title="form.id==0?'添加公众号':'编辑公众号'" :visible.sync="dialogFormVisible">
-            <el-form :model="form" label-width="130px">
-                <el-form-item label="公众号名称">
-                    <el-input v-model="form.name"></el-input>
-                </el-form-item>
-                <el-form-item label="公众号类型">
-                    <el-radio-group v-model="form.account_type">
-                        <el-radio label="office">公众号</el-radio>
-                        <el-radio label="mini">小程序</el-radio>
-                    </el-radio-group>
-                </el-form-item>
-                <el-form-item label="app_id">
-                    <el-input v-model="form.app_id"></el-input>
-                </el-form-item>
-                <el-form-item label="secret">
-                    <el-input v-model="form.secret"></el-input>
-                </el-form-item>
-                <el-form-item label="微信支付mch_id">
-                    <el-input v-model="form.mch_id"></el-input>
-                </el-form-item>
-                <el-form-item label="微信支付key">
-                    <el-input v-model="form.key"></el-input>
-                </el-form-item>
-                <el-form-item label="支付cert_path">
-                    <el-upload
-                            class="upload-demo"
-                            action="{:U('Wechat/Wechat/uploadfile')}"
-                            :on-success="uploadSuccessCert"
-                            :show-file-list="false">
+            <el-tabs v-model="activeName"  @tab-click="handleClick">
+                <el-tab-pane label="开发配置" name="first">
+                    <el-form :model="form" label-width="130px">
+                        <el-form-item label="公众号名称">
+                            <el-input v-model="form.name"></el-input>
+                        </el-form-item>
+                        <el-form-item label="公众号类型">
+                            <el-radio-group v-model="form.account_type">
+                                <el-radio label="office">公众号</el-radio>
+                                <el-radio label="mini">小程序</el-radio>
+                            </el-radio-group>
+                        </el-form-item>
+                        <el-form-item label="app_id">
+                            <el-input v-model="form.app_id"></el-input>
+                        </el-form-item>
+                        <el-form-item label="secret">
+                            <el-input v-model="form.secret"></el-input>
+                        </el-form-item>
+                        <el-form-item v-if="form.account_type == 'office'" label="token">
+                            <el-input v-model="form.token"></el-input>
+                            <div class="el-tip">接受服务推送消息需要配置token</div>
+                        </el-form-item>
+                        <el-form-item v-if="form.account_type == 'office'" label="aes_key">
+                            <el-input v-model="form.aes_key"></el-input>
+                        </el-form-item>
+                    </el-form>
+                </el-tab-pane>
+                <el-tab-pane label="微信支付" name="second">
+                    <el-form :model="form" label-width="130px">
+                        <el-form-item label="微信支付mch_id">
+                            <el-input v-model="form.mch_id"></el-input>
+                        </el-form-item>
+                        <el-form-item label="微信支付key">
+                            <el-input v-model="form.key"></el-input>
+                        </el-form-item>
+                        <el-form-item label="支付cert_path">
+                            <el-upload
+                                    class="upload-demo"
+                                    action="{:U('Wechat/Wechat/uploadfile')}"
+                                    :on-success="uploadSuccessCert"
+                                    :show-file-list="false">
 
-                        <el-button size="small" type="primary">点击上传</el-button>
-                        <div slot="tip" class="el-upload__tip">{{cert_path}}</div>
-                        <div slot="tip" class="el-upload__tip">请上传微信支付的 apiclient_cert.pem文件</div>
-                    </el-upload>
-                </el-form-item>
-                <el-form-item label="支付key_path">
-                    <el-upload
-                            class="upload-demo"
-                            action="{:U('Wechat/Wechat/uploadfile')}"
-                            :on-success="uploadSuccessKey"
-                            :show-file-list="false">
-                        <el-button size="small" type="primary">点击上传</el-button>
-                        <div slot="tip" class="el-upload__tip">{{key_path}}</div>
-                        <div slot="tip" class="el-upload__tip">请上传微信支付的 apiclient_key.pem文件</div>
-                    </el-upload>
-                </el-form-item>
-            </el-form>
+                                <el-button size="small" type="primary">点击上传</el-button>
+                                <div slot="tip" class="el-upload__tip">{{cert_path}}</div>
+                                <div slot="tip" class="el-upload__tip">请上传微信支付的 apiclient_cert.pem文件</div>
+                            </el-upload>
+                        </el-form-item>
+                        <el-form-item label="支付key_path">
+                            <el-upload
+                                    class="upload-demo"
+                                    action="{:U('Wechat/Wechat/uploadfile')}"
+                                    :on-success="uploadSuccessKey"
+                                    :show-file-list="false">
+                                <el-button size="small" type="primary">点击上传</el-button>
+                                <div slot="tip" class="el-upload__tip">{{key_path}}</div>
+                                <div slot="tip" class="el-upload__tip">请上传微信支付的 apiclient_key.pem文件</div>
+                            </el-upload>
+                        </el-form-item>
+                    </el-form>
+                </el-tab-pane>
+            </el-tabs>
             <div slot="footer" class="dialog-footer">
                 <el-button @click="dialogFormVisible = false">取 消</el-button>
                 <el-button type="primary" @click="submitEvent">确 定</el-button>
@@ -140,11 +154,14 @@
                         mch_id: "",
                         key: "",
                         cert_path: "",
-                        key_path: ""
+                        key_path: "",
+                        token: "",
+                        aes_key: "",
                     },
                     key_path: "",
                     cert_path: "",
-                    offices: []
+                    offices: [],
+                    activeName: 'first'
                 },
                 mounted() {
                     this.getDetail()
@@ -239,7 +256,9 @@
                             mch_id: "",
                             key: "",
                             cert_path: "",
-                            key_path: ""
+                            key_path: "",
+                            token: "",
+                            aes_key: ""
                         };
                         this.cert_path = "";
                         this.key_path = "";

@@ -45,6 +45,8 @@ class WechatController extends AdminBase
         $key = I('post.key');
         $certPath = I('post.cert_path');
         $keyPath = I('post.key_path');
+        $token = I('post.token');
+        $aesKey = I('post.aes_key');
         $postData = [
             'name'         => $name,
             'account_type' => $accountType,
@@ -53,7 +55,9 @@ class WechatController extends AdminBase
             'mch_id'       => $mchId,
             'key'          => $key,
             'cert_path'    => $certPath,
-            'key_path'     => $keyPath
+            'key_path'     => $keyPath,
+            'token'        => $token,
+            'aes_key'      => $aesKey,
         ];
         $OfficesModel = new OfficesModel();
         $res = $OfficesModel->editOffice($postData, $id);
