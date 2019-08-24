@@ -23,14 +23,14 @@ class ServerController extends Base
     {
         try {
             $officeService = new OfficeService($appid);
-            $response = $officeService->app->server->push(function ($message) use ($officeService) {
+            $officeService->app->server->push(function ($message) use ($officeService) {
                 switch ($message['MsgType']) {
                     case 'event':
                         $officeService->handleEventMessage($message);
                         break;
                 }
+                return true;
             });
-            $response->send();
         } catch (\Exception $exception) {
             echo $exception->getMessage();
         }
