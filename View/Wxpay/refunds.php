@@ -48,12 +48,6 @@
                             min-width="180">
                     </el-table-column>
                     <el-table-column
-                            prop="open_id"
-                            label="open_id"
-                            align="center"
-                            min-width="250">
-                    </el-table-column>
-                    <el-table-column
                             label="总支付金额"
                             align="center"
                             min-width="100">

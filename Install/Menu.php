@@ -70,6 +70,34 @@ return [
                         "name"   => "消息模板",
                     ]
                 ]
+            ], [
+                "route"  => "Wechat/Wxpay/index",
+                "type"   => 0,
+                "status" => 1,
+                "name"   => "微信支付",
+                "child"  => [
+                    [
+                        "route"  => "Wechat/Wxpay/orders",
+                        "type"   => 0,
+                        "status" => 1,
+                        "name"   => "支付订单",
+                    ], [
+                        "route"  => "Wechat/Wxpay/refunds",
+                        "type"   => 0,
+                        "status" => 1,
+                        "name"   => "退款订单",
+                    ], [
+                        "route"  => "Wechat/Wxpay/redpacks",
+                        "type"   => 0,
+                        "status" => 1,
+                        "name"   => "发送红包",
+                    ], [
+                        "route"  => "Wechat/Wxpay/mchpays",
+                        "type"   => 0,
+                        "status" => 1,
+                        "name"   => "企业付款",
+                    ]
+                ]
             ],
         ],
     ],
