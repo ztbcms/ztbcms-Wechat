@@ -68,6 +68,16 @@ return [
                         "type"   => 0,
                         "status" => 1,
                         "name"   => "消息模板",
+                    ], [
+                        "route"  => "Wechat/Office/messageList",
+                        "type"   => 0,
+                        "status" => 1,
+                        "name"   => "内容消息",
+                    ], [
+                        "route"  => "Wechat/Office/eventMessageList",
+                        "type"   => 0,
+                        "status" => 1,
+                        "name"   => "事件消息",
                     ]
                 ]
             ], [

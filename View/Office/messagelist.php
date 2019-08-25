@@ -6,6 +6,11 @@
                 <span>消息列表</span>
             </div>
             <div>
+                <div class="alert-msg">
+                    <p>1.消息接受需要开启"服务配置"：微信公众平台>开发>基本配置>服务配置（启用）</p>
+                    <p>2.填写 服务器地址(URL)：http://{xxx}/Wechat/Server/push/appid/{appid}</p>
+                    <p>3.填写token，aes_key，注意token验证，需要在服务器先配置</p>
+                </div>
                 <el-form :inline="true" :model="searchData" class="demo-form-inline">
                     <el-form-item label="appid">
                         <el-input v-model="searchData.app_id" placeholder="请输入小程序appid"></el-input>
@@ -64,6 +69,15 @@
             margin-top: 0px;
             text-align: center;
             padding: 10px;
+        }
+
+        .alert-msg {
+            background-color: #e8f3fe;
+            padding: 20px 20px;
+            border-radius: 5px;
+            margin-bottom: 20px;
+            color: #7dbcfc;
+            font-size: 14px;
         }
     </style>
     <script>
