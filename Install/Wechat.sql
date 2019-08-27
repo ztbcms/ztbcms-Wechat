@@ -16,6 +16,19 @@ CREATE TABLE `cms_wechat_offices` (
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8mb4;
 
+DROP TABLE IF EXISTS `cms_wechat_auto_token`;
+CREATE TABLE `cms_wechat_auto_token` (
+  `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
+  `app_id` varchar(64) DEFAULT '',
+  `app_account_type` varchar(32) DEFAULT '' COMMENT '公众号类型',
+  `open_id` varchar(128) DEFAULT '' COMMENT '用户openid',
+  `code` varchar(128) DEFAULT '' COMMENT '登录临时凭证code',
+  `token` varchar(128) DEFAULT '' COMMENT '登录token',
+  `expire_time` int(11) DEFAULT NULL COMMENT 'token过期时间',
+  `refresh_token` varchar(128) DEFAULT '' COMMENT '刷新token',
+  `create_time` int(11) DEFAULT '0' COMMENT '创建时间',
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8mb4;
 
 DROP TABLE IF EXISTS `cms_wechat_mini_users`;
 CREATE TABLE `cms_wechat_mini_users` (
