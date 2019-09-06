@@ -187,7 +187,7 @@ class WxpayService extends BaseService
         $wxpayRedpackModel = new WxpayRedpackModel();
         $res = $wxpayRedpackModel->add($postData);
         if ($res) {
-            return self::createReturn(true, [], '申请发送红包成功，等待处理');
+            return self::createReturn(true, $res, '申请发送红包成功，等待处理');
         } else {
             return self::createReturn(false, [], '');
         }

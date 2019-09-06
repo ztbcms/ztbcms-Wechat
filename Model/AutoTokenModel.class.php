@@ -59,7 +59,7 @@ class AutoTokenModel extends Model
      */
     function getTokenByCode($code)
     {
-        $res = $this->where(['code' => $code])->field("token,expire_time,refresh_token")->find();
+        $res = $this->where(['code' => $code])->field("open_id,token,expire_time,refresh_token")->find();
         if ($res) {
             //校验过后，code信息更新为空
             $this->where(['code' => $code])->save(['code' => '']);
