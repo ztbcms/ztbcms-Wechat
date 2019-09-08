@@ -95,7 +95,12 @@ class WechatController extends AdminBase
     {
         $upload = new \UploadFile();
         $upload->exts = ['jpg', 'gif', 'png', 'jpeg'];
-        $upload->savePath = C("UPLOADFILEPATH").'wechat/cert/';
+        $directory = C("UPLOADFILEPATH").'wechat/cert/';
+        $directory = rtrim($directory, '/');
+        if (!is_dir($directory)) {
+            mkdir($directory, 0755, true);
+        }
+        $upload->savePath = $directory;
         $res = $upload->upload();
         if ($res) {
             $file = $upload->getUploadFileInfo()[0];

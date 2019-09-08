@@ -72,7 +72,7 @@
         </el-card>
         <!-- 添加-->
         <el-dialog width="600px" :title="form.id==0?'添加公众号':'编辑公众号'" :visible.sync="dialogFormVisible">
-            <el-tabs v-model="activeName"  @tab-click="handleClick">
+            <el-tabs v-model="activeName">
                 <el-tab-pane label="开发配置" name="first">
                     <el-form :model="form" label-width="130px">
                         <el-form-item label="公众号名称">
