@@ -65,7 +65,7 @@ class OfficeService extends BaseService
     function getJssdk($url, $APIs = [], $debug = false)
     {
         $this->app->jssdk->setUrl($url);
-        $res = $this->app->jssdk->buildConfig($APIs, $debug);
+        $res = $this->app->jssdk->buildConfig($APIs, $debug, false, false);
         if ($res) {
             return self::createReturn(true, ['config' => $res], '获取成功');
         } else {
