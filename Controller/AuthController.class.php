@@ -32,8 +32,9 @@ class AuthController extends Base
         if ($redirectUrl) {
             session('redirect_url', $redirectUrl);
         }
-        echo $office->app->oauth->scopes(['snsapi_userinfo'])
+        $response = $office->app->oauth->scopes(['snsapi_userinfo'])
             ->redirect(U("Wechat/Auth/callback", ['appid' => $appid]));
+        $response->send();
     }
 
     /**
@@ -50,8 +51,9 @@ class AuthController extends Base
         if ($redirectUrl) {
             session('redirect_url', $redirectUrl);
         }
-        echo $office->app->oauth->scopes(['snsapi_base'])
+        $response = $office->app->oauth->scopes(['snsapi_base'])
             ->redirect(U("Wechat/Auth/callback", ['appid' => $appid]));
+        $response->send();
     }
 
     /**
