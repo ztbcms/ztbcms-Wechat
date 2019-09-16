@@ -11,7 +11,7 @@ use Wechat\Model\OfficesModel;
 use Wechat\Service\WxpayService;
 
 
-class WxpayCorn extends Cron
+class HandleWxpay extends Cron
 {
 
     //任务主体
