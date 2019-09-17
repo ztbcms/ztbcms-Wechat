@@ -10,6 +10,8 @@ namespace Wechat\Controller;
 
 
 use Common\Controller\AdminBase;
+use Wechat\Model\OfficeEventMessageModel;
+use Wechat\Model\OfficeMessageModel;
 use Wechat\Model\OfficeQrcodeModel;
 use Wechat\Model\OfficesModel;
 use Wechat\Model\OfficeTemplateListModel;
@@ -19,6 +21,105 @@ use Wechat\Service\OfficeTemplateService;
 
 class OfficeController extends AdminBase
 {
+
+    /**
+     * 删除消息记录
+     *
+     * @throws \Think\Exception
+     */
+    function deleteMessage()
+    {
+        $id = I('post.id');
+        $officeMessageModel = new OfficeMessageModel();
+        $officeMessage = $officeMessageModel->where(['id' => $id])->find();
+        if ($officeMessage) {
+            $res = $officeMessageModel->where(['id' => $officeMessage['id']])->delete();
+            if ($res) {
+                $this->ajaxReturn(self::createReturn(true, [], '删除成功'));
+            } else {
+                $this->ajaxReturn(self::createReturn(false, [], '删除失败'));
+            }
+        } else {
+            $this->ajaxReturn(self::createReturn(false, [], '找不到该记录'));
+        }
+    }
+
+    function messageList()
+    {
+        if (IS_AJAX) {
+            $appId = I('get.app_id', '');
+            $openId = I('get.open_id', '');
+            $msgType = I('get.msg_type', '');
+            $page = I('get.page', 1);
+            $limit = I('get.limit', 20);
+            $where = [];
+            if ($appId) {
+                $where['app_id'] = ['like', '%'.$appId.'%'];
+            }
+            if ($openId) {
+                $where['from_user_name'] = ['like', '%'.$openId.'%'];
+            }
+            if ($msgType) {
+                $where['msg_type'] = ['eq', $msgType];
+            }
+            $officeMessageModel = new OfficeMessageModel();
+            $res = $officeMessageModel->where($where)->page($page, $limit)->order('id DESC')->select();
+            $totalCount = $officeMessageModel->where($where)->count();
+            $this->ajaxReturn(self::createReturnList(true, $res ? $res : [], $page, $limit, $totalCount, ceil($totalCount / $limit), '获取成功'));
+        }
+        $this->display('messagelist');
+    }
+
+    /**
+     * 删除事件消息记录
+     *
+     * @throws \Think\Exception
+     */
+    function deleteEventMessage()
+    {
+        $id = I('post.id');
+        $officeEventMessageModel = new OfficeEventMessageModel();
+        $officeEventMessage = $officeEventMessageModel->where(['id' => $id])->find();
+        if ($officeEventMessage) {
+            $res = $officeEventMessageModel->where(['id' => $officeEventMessage['id']])->delete();
+            if ($res) {
+                $this->ajaxReturn(self::createReturn(true, [], '删除成功'));
+            } else {
+                $this->ajaxReturn(self::createReturn(false, [], '删除失败'));
+            }
+        } else {
+            $this->ajaxReturn(self::createReturn(false, [], '找不到该记录'));
+        }
+    }
+
+    /**
+     * 显示事件消息列表
+     */
+    function eventMessageList()
+    {
+        if (IS_AJAX) {
+            $appId = I('get.app_id', '');
+            $openId = I('get.open_id', '');
+            $event = I('get.event', '');
+            $page = I('get.page', 1);
+            $limit = I('get.limit', 20);
+            $where = [];
+            if ($appId) {
+                $where['app_id'] = ['like', '%'.$appId.'%'];
+            }
+            if ($openId) {
+                $where['from_user_name'] = ['like', '%'.$openId.'%'];
+            }
+            if ($event) {
+                $where['event'] = ['eq', $event];
+            }
+            $officeEventMessageModel = new OfficeEventMessageModel();
+            $res = $officeEventMessageModel->where($where)->page($page, $limit)->order('id DESC')->select();
+            $totalCount = $officeEventMessageModel->where($where)->count();
+            $this->ajaxReturn(self::createReturnList(true, $res ? $res : [], $page, $limit, $totalCount, ceil($totalCount / $limit), '获取成功'));
+        }
+        $this->display('eventmessagelist');
+    }
 
     /**
      * 创建小程序码

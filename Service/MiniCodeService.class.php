@@ -36,6 +36,10 @@ class MiniCodeService extends MiniService
         $path = empty($optional['page']) ? "" : $optional['page'];
         if ($response instanceof \EasyWeChat\Kernel\Http\StreamResponse) {
             $uploadPath = C("UPLOADFILEPATH").'wechat/code/';
+            $directory = rtrim($uploadPath, '/');
+            if (!is_dir($directory)) {
+                mkdir($directory, 0755, true);
+            }
             $fileName = md5(time().rand(1000, 9999)).'.png';
             $res = $response->saveAs($uploadPath, $fileName);
             if ($res) {
@@ -71,6 +75,7 @@ class MiniCodeService extends MiniService
      * @throws \EasyWeChat\Kernel\Exceptions\InvalidArgumentException
      * @throws \EasyWeChat\Kernel\Exceptions\InvalidConfigException
      * @throws \EasyWeChat\Kernel\Exceptions\RuntimeException
+     * @throws \GuzzleHttp\Exception\GuzzleException
      * @throws \Think\Exception
      * @return array
      */
@@ -79,6 +84,10 @@ class MiniCodeService extends MiniService
         $response = $this->app->app_code->get($path, $optional);
         if ($response instanceof \EasyWeChat\Kernel\Http\StreamResponse) {
             $uploadPath = C("UPLOADFILEPATH").'wechat/code/';
+            $directory = rtrim($uploadPath, '/');
+            if (!is_dir($directory)) {
+                mkdir($directory, 0755, true);
+            }
             $fileName = md5(time().rand(1000, 9999)).'.png';
             $res = $response->saveAs($uploadPath, $fileName);
             if ($res) {

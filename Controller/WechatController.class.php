@@ -72,15 +72,19 @@ class WechatController extends AdminBase
         $key = I('post.key');
         $certPath = I('post.cert_path');
         $keyPath = I('post.key_path');
+        $token = I('post.token');
+        $aesKey = I('post.aes_key');
         $postData = [
             'name' => $name,
             'account_type' => $accountType,
-            'app_id' => $appId,
-            'secret' => $secret,
-            'mch_id' => $mchId,
-            'key' => $key,
-            'cert_path' => $certPath,
-            'key_path' => $keyPath
+            'app_id'       => $appId,
+            'secret'       => $secret,
+            'mch_id'       => $mchId,
+            'key'          => $key,
+            'cert_path'    => $certPath,
+            'key_path'     => $keyPath,
+            'token'        => $token,
+            'aes_key'      => $aesKey,
         ];
         $OfficesModel = new OfficesModel();
         $res = $OfficesModel->editOffice($postData, $id);
@@ -116,14 +120,13 @@ class WechatController extends AdminBase
     function uploadfile()
     {
         $upload = new \UploadFile();
-        $upload->savePath = C("UPLOADFILEPATH") . 'wechat/cert/';
-        if (!file_exists($upload->savePath)) {
-            $res = mkdir($upload->savePath, 0766, true);
-            if (!$res) {
-                $this->ajaxReturn(self::createReturn(false, null, '无法创建文件目录，请检查上传目录 d/ 是否有读写权限'));
-            }
+        $upload->exts = ['jpg', 'gif', 'png', 'jpeg'];
+        $directory = C("UPLOADFILEPATH").'wechat/cert/';
+        $directory = rtrim($directory, '/');
+        if (!is_dir($directory)) {
+            mkdir($directory, 0755, true);
         }
-
+        $upload->savePath = $directory;
         $res = $upload->upload();
         if ($res) {
             $file = $upload->getUploadFileInfo()[0];

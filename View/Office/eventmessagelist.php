@@ -1,20 +1,46 @@
 <extend name="../../Admin/View/Common/element_layout"/>
 <block name="content">
-    <div id="app" v-cloak>
+    <div id="app">
         <el-card>
             <div slot="header" class="clearfix">
-                <span>小程序用户列表</span>
+                <span>事件消息列表</span>
             </div>
             <div>
+                <div class="alert-msg">
+                    <p>1.消息接受需要开启"服务配置"：微信公众平台>开发>基本配置>服务配置（启用）</p>
+                    <p>2.填写 服务器地址(URL)：http://{xxx}/Wechat/Server/push/appid/{appid}</p>
+                    <p>3.填写token，aes_key，注意token验证，需要在服务器先配置</p>
+                </div>
                 <el-form :inline="true" :model="searchData" class="demo-form-inline">
                     <el-form-item label="appid">
                         <el-input v-model="searchData.app_id" placeholder="请输入小程序appid"></el-input>
                     </el-form-item>
                     <el-form-item label="open_id">
-                        <el-input v-model="searchData.open_id" placeholder="请输入用户openid"></el-input>
+                        <el-input v-model="searchData.open_id" placeholder="发送用户openid"></el-input>
                     </el-form-item>
-                    <el-form-item label="昵称">
-                        <el-input v-model="searchData.nick_name" placeholder="请输入用户昵称"></el-input>
+                    <el-form-item label="事件类型">
+                        <el-select v-model="searchData.event" placeholder="请选择">
+                            <el-option
+                                    value="">
+                                全部
+                            </el-option>
+                            <el-option
+                                    value="subscribe">
+                                关注
+                            </el-option>
+                            <el-option
+                                    value="unsubscribe">
+                                取消关注
+                            </el-option>
+                            <el-option
+                                    value="SCAN">
+                                扫描
+                            </el-option>
+                            <el-option
+                                    value="LOCATION">
+                                地理位置
+                            </el-option>
+                        </el-select>
                     </el-form-item>
                     <el-form-item>
                         <el-button type="primary" @click="searchEvent">查询</el-button>
@@ -33,54 +59,43 @@
                             min-width="180">
                     </el-table-column>
                     <el-table-column
-                            label="头像"
-                            align="center"
-                            min-width="100">
-                        <template slot-scope="scope">
-                            <img class="avatar" :src="scope.row.avatar_url" alt="">
-                        </template>
-                    </el-table-column>
-                    <el-table-column
-                            prop="nick_name"
-                            label="昵称"
+                            prop="from_user_name"
+                            label="发送用户openid"
                             align="center"
                             min-width="180">
                     </el-table-column>
                     <el-table-column
-                            prop="country"
-                            label="国家"
+                            prop="to_user_name"
+                            label="接收者"
+                            align="center"
+                            min-width="180">
+                    </el-table-column>
+                    <el-table-column
+                            prop="event"
+                            label="事件类型"
                             align="center"
                             min-width="100">
                     </el-table-column>
                     <el-table-column
-                            prop="province"
-                            label="省份"
+                            prop="event_key"
+                            label="事件关键词"
                             align="center"
                             min-width="100">
                     </el-table-column>
                     <el-table-column
-                            prop="city"
-                            label="城市"
+                            label="地理位置信息"
                             align="center"
-                            min-width="100">
-                    </el-table-column>
-                    <el-table-column
-                            prop="language"
-                            label="语言"
-                            align="center"
-                            min-width="100">
-                    </el-table-column>
-                    <el-table-column
-                            prop="open_id"
-                            label="open_id"
-                            align="center"
-                            min-width="250">
-                    </el-table-column>
-                    <el-table-column
-                            prop="union_id"
-                            label="union_id"
-                            align="center"
-                            min-width="250">
+                            min-width="200">
+                        <template slot-scope="scope">
+                            <div v-if=" scope.row.event == 'LOCATION'">
+                                <div><b>纬度</b>：{{ scope.row.latitude }}</div>
+                                <div><b>经度</b>：{{ scope.row.longitude }}</div>
+                                <div><b>精确度</b>：{{ scope.row.precision }}</div>
+                            </div>
+                            <div v-else>
+                                -
+                            </div>
+                        </template>
                     </el-table-column>
                     <el-table-column
                             align="center"
@@ -125,6 +140,14 @@
             text-align: center;
             padding: 10px;
         }
+        .alert-msg {
+            background-color: #e8f3fe;
+            padding: 20px 20px;
+            border-radius: 5px;
+            margin-bottom: 20px;
+            color: #7dbcfc;
+            font-size: 14px;
+        }
     </style>
     <script>
         $(document).ready(function () {
@@ -134,7 +157,7 @@
                     searchData: {
                         open_id: "",
                         app_id: "",
-                        nick_name: ""
+                        event: ""
                     },
                     users: [],
                     page: 1,
@@ -143,7 +166,7 @@
                     totalItems: 0
                 },
                 mounted() {
-                    this.getRefunds();
+                    this.getEventMessage();
                 },
                 methods: {
                     deleteEvent(row) {
@@ -157,34 +180,33 @@
                                 if (e !== 'confirm') {
                                     return;
                                 }
-                                _this.httpPost('{:U("Wechat/Mini/deleteUsers")}', postData, function (res) {
+                                _this.httpPost('{:U("Wechat/Office/deleteEventMessage")}', postData, function (res) {
                                     if (res.status) {
                                         _this.$message.success('删除成功');
-                                        _this.getRefunds();
+                                        _this.getEventMessage();
                                     } else {
                                         _this.$message.error(res.msg);
                                     }
                                 })
                             }
                         });
-
                     },
                     searchEvent() {
                         this.page = 1;
-                        this.getRefunds();
+                        this.getEventMessage();
                     },
                     currentChangeEvent(page) {
                         this.page = page;
-                        this.getRefunds();
+                        this.getEventMessage();
                     },
-                    getRefunds: function () {
+                    getEventMessage: function () {
                         var _this = this;
                         var where = Object.assign({
                             page: this.page,
                             limit: this.limit
                         }, this.searchData);
                         $.ajax({
-                            url: "{:U('Wechat/Mini/users')}",
+                            url: "{:U('Wechat/Office/eventMessageList')}",
                             dataType: 'json',
                             type: 'get',
                             data: where,
