@@ -17,41 +17,41 @@
                             prop="name"
                             align="center"
                             label="名称"
-                            min-width="180">
+                            min-width="100">
                     </el-table-column>
                     <el-table-column
                             label="类型"
                             align="center"
-                            min-width="100">
+                            min-width="80">
                         <template slot-scope="scope">
                             <span v-if="scope.row.account_type=='mini'">小程序</span>
                             <span v-else>公众号</span>
                         </template>
                     </el-table-column>
                     <el-table-column
-                            prop="app_id"
-                            label="app_id"
+                            label="开发信息"
                             align="center"
-                            min-width="180">
+                            min-width="240">
+                        <template slot-scope="scope">
+                            <div style="text-align: left">
+                                <p>APP_ID : {{ scope.row.app_id }}</p>
+                                <p>SECRET : {{ scope.row.secret }}</p>
+                            </div>
+                        </template>
                     </el-table-column>
+
                     <el-table-column
-                            prop="secret"
-                            label="secret"
+                            label="微信支付信息"
                             align="center"
-                            min-width="250">
+                            min-width="240">
+                        <template slot-scope="scope">
+                            <div style="text-align: left">
+                                <p>mch_id : {{ scope.row.mch_id }}</p>
+                                <p>key : {{ scope.row.key }}</p>
+                            </div>
+                        </template>
                     </el-table-column>
-                    <el-table-column
-                            prop="mch_id"
-                            label="微信支付mch_id"
-                            align="center"
-                            min-width="180">
-                    </el-table-column>
-                    <el-table-column
-                            prop="key"
-                            label="微信支付key"
-                            align="center"
-                            min-width="250">
-                    </el-table-column>
+
                     <el-table-column
                             align="center"
                             label="创建时间"

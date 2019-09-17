@@ -31,8 +31,6 @@
                 <el-form-item v-if="form.account_type == 'office'" label="aes_key">
                     <el-input v-model="form.aes_key"></el-input>
                     <div class="el-tip">消息加解密密钥(从微信公众号『开发-基本配置』-『服务器配置』中获取)</div>
-
-
                 </el-form-item>
                 <el-form-item label="支付cert_path">
                     <el-upload
@@ -81,10 +79,13 @@
                         mch_id: "",
                         key: "",
                         cert_path: "",
-                        key_path: ""
+                        key_path: "",
+                        token: "",
+                        aes_key: "",
                     },
                 },
                 mounted() {
+                    this.form.id = this.getUrlQuery('id')
                     this.getDetail()
                 },
                 methods: {
