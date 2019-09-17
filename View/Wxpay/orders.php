@@ -1,6 +1,6 @@
 <extend name="../../Admin/View/Common/element_layout"/>
 <block name="content">
-    <div id="app">
+    <div id="app" v-cloak>
         <el-card>
             <div slot="header" class="clearfix">
                 <span>支付订单列表</span>
