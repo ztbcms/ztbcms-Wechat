@@ -24,6 +24,16 @@
                 <el-form-item label="微信支付key">
                     <el-input v-model="form.key"></el-input>
                 </el-form-item>
+                <el-form-item v-if="form.account_type == 'office'" label="token">
+                    <el-input v-model="form.token"></el-input>
+                    <div class="el-tip">接受服务推送消息需要配置令牌token(从微信公众号『开发-基本配置』-『服务器配置』中获取)</div>
+                </el-form-item>
+                <el-form-item v-if="form.account_type == 'office'" label="aes_key">
+                    <el-input v-model="form.aes_key"></el-input>
+                    <div class="el-tip">消息加解密密钥(从微信公众号『开发-基本配置』-『服务器配置』中获取)</div>
+
+
+                </el-form-item>
                 <el-form-item label="支付cert_path">
                     <el-upload
                             class="upload-demo"
