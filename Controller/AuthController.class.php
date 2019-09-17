@@ -10,6 +10,9 @@ namespace Wechat\Controller;
 
 
 use Common\Controller\Base;
+use EasyWeChat\Kernel\Exceptions\DecryptException;
+use EasyWeChat\Kernel\Exceptions\InvalidConfigException;
+use Think\Exception;
 use Wechat\Model\AutoTokenModel;
 use Wechat\Model\OfficeUsersModel;
 use Wechat\Service\MiniUsersService;
@@ -23,7 +26,7 @@ class AuthController extends Base
      *
      * @param $appid
      *
-     * @throws \Think\Exception
+     * @throws Exception
      */
     function oauth($appid)
     {
@@ -42,7 +45,7 @@ class AuthController extends Base
      *
      * @param $appid
      *
-     * @throws \Think\Exception
+     * @throws Exception
      */
     function oauthBase($appid)
     {
@@ -61,8 +64,7 @@ class AuthController extends Base
      *
      * @param $appid
      *
-     * @throws \ReflectionException
-     * @throws \Think\Exception
+     * @throws Exception
      */
     function callback($appid)
     {
@@ -116,10 +118,10 @@ class AuthController extends Base
                     $this->ajaxReturn(self::createReturn(true, [], '创建登录信息失败'));
                 }
             } else {
-                $this->ajaxReturn(self::createReturn(true, [], '获取信息成功过'));
+                $this->ajaxReturn(self::createReturn(true, null, '获取信息成功,但未设置回掉URL'));
             }
         } else {
-            $this->ajaxReturn(self::createReturn(false, [], '获取用户信息失败'));
+            $this->ajaxReturn(self::createReturn(false, null, '获取用户信息失败'));
         }
     }
 
@@ -128,9 +130,9 @@ class AuthController extends Base
      *
      * @param $appid
      *
-     * @throws \EasyWeChat\Kernel\Exceptions\DecryptException
-     * @throws \EasyWeChat\Kernel\Exceptions\InvalidConfigException
-     * @throws \Think\Exception
+     * @throws DecryptException
+     * @throws InvalidConfigException
+     * @throws Exception
      */
     function miniAuthUserInfo($appid)
     {
@@ -144,6 +146,7 @@ class AuthController extends Base
 
     /**
      * 通过临时登录凭证code 获取token信息
+     * @throws Exception
      */
     function getTokenByCode()
     {
