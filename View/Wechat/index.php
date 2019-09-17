@@ -4,9 +4,11 @@
         <el-card>
             <div slot="header" class="clearfix">
                 <span>公众号列表</span>
-                <el-button @click="addEvent" style="float: right; padding: 3px 0" type="text">添加公众号</el-button>
             </div>
             <div>
+                <el-button @click="addEvent" type="primary">添加公众号</el-button>
+            </div>
+            <div style="margin-top: 10px">
                 <el-table
                         :data="offices"
                         border
@@ -63,191 +65,120 @@
                             align="center"
                             min-width="180">
                         <template slot-scope="scope">
-                            <el-button @click="editEvent(scope.row)" type="primary">编辑</el-button>
-                            <el-button @click="deleteEvent(scope.row)" type="danger">删除</el-button>
+                            <el-button @click="editEvent(scope.row)" type="primary" size="small">编辑</el-button>
+                            <el-button @click="deleteEvent(scope.row)" type="danger" size="small">删除</el-button>
                         </template>
                     </el-table-column>
                 </el-table>
+
+                <div class="pagination-container">
+                    <el-pagination
+                            background
+                            layout="prev, pager, next, jumper"
+                            :total="total"
+                            v-show="total>0"
+                            :current-page.sync="form.page"
+                            :page-size.sync="form.limit"
+                            @current-change="getList"
+                    >
+                    </el-pagination>
+                </div>
             </div>
         </el-card>
 
-        <!-- 添加-->
-        <el-dialog width="600px" :title="form.id==0?'添加公众号':'编辑公众号'" :visible.sync="dialogFormVisible">
-            <el-form :model="form" label-width="130px">
-                <el-form-item label="公众号名称">
-                    <el-input v-model="form.name"></el-input>
-                </el-form-item>
-                <el-form-item label="公众号类型">
-                    <el-radio-group v-model="form.account_type">
-                        <el-radio label="office">公众号</el-radio>
-                        <el-radio label="mini">小程序</el-radio>
-                    </el-radio-group>
-                </el-form-item>
-                <el-form-item label="app_id">
-                    <el-input v-model="form.app_id"></el-input>
-                </el-form-item>
-                <el-form-item label="secret">
-                    <el-input v-model="form.secret"></el-input>
-                </el-form-item>
-                <el-form-item label="微信支付mch_id">
-                    <el-input v-model="form.mch_id"></el-input>
-                </el-form-item>
-                <el-form-item label="微信支付key">
-                    <el-input v-model="form.key"></el-input>
-                </el-form-item>
-                <el-form-item label="支付cert_path">
-                    <el-upload
-                            class="upload-demo"
-                            action="{:U('Wechat/Wechat/uploadfile')}"
-                            :on-success="uploadSuccessCert"
-                            :show-file-list="false">
-
-                        <el-button size="small" type="primary">点击上传</el-button>
-                        <div slot="tip" class="el-upload__tip">{{cert_path}}</div>
-                        <div slot="tip" class="el-upload__tip">请上传微信支付的 apiclient_cert.pem文件</div>
-                    </el-upload>
-                </el-form-item>
-                <el-form-item label="支付key_path">
-                    <el-upload
-                            class="upload-demo"
-                            action="{:U('Wechat/Wechat/uploadfile')}"
-                            :on-success="uploadSuccessKey"
-                            :show-file-list="false">
-                        <el-button size="small" type="primary">点击上传</el-button>
-                        <div slot="tip" class="el-upload__tip">{{key_path}}</div>
-                        <div slot="tip" class="el-upload__tip">请上传微信支付的 apiclient_key.pem文件</div>
-                    </el-upload>
-                </el-form-item>
-            </el-form>
-            <div slot="footer" class="dialog-footer">
-                <el-button @click="dialogFormVisible = false">取 消</el-button>
-                <el-button type="primary" @click="submitEvent">确 定</el-button>
-            </div>
-        </el-dialog>
     </div>
+
+    <style>
+        .pagination-container {
+            padding: 32px 16px;
+        }
+    </style>
+
     <script>
         $(document).ready(function () {
             new Vue({
                 el: "#app",
                 data: {
-                    dialogFormVisible: false,
+                    offices: [],
                     form: {
-                        id: 0,
-                        name: "",
-                        account_type: "office",
-                        app_id: "",
-                        secret: "",
-                        mch_id: "",
-                        key: "",
-                        cert_path: "",
-                        key_path: ""
+                        page: 1,
+                        limit: 10,
                     },
-                    key_path: "",
-                    cert_path: "",
-                    offices: []
+                    total: 0
                 },
                 mounted() {
-                    this.getDetail()
+                    this.getList()
                 },
                 methods: {
-                    uploadSuccessKey(res) {
-                        console.log("uploadSuccessKey", res);
-                        if (res.status) {
-                            this.key_path = res.data.path;
-                            this.form.key_path = this.key_path
-                            // this.form = Object.assign(this.form, {key_path: res.data.path});
-                        } else {
-                            this.$message.error(res.msg)
-                        }
-                    },
-                    uploadSuccessCert(res) {
-                        console.log("uploadSuccessCert", res);
-                        if (res.status) {
-                            this.cert_path = res.data.path;
-                            this.form.cert_path = this.cert_path
-                        } else {
-                            this.$message.error(res.msg)
-                        }
-                    },
-                    deleteEvent(deleteItem) {
+                    deleteEvent: function (item) {
                         var _this = this;
-                        this.$confirm('是否确认删除"' + deleteItem.name + '" ？').then(res => {
-                            //确认删除
-                            $.ajax({
-                                url: "{:U('Wechat/Wechat/deleteOffice')}",
-                                data: {id: deleteItem.id},
-                                dataType: 'json',
-                                type: 'post',
-                                success: function (res) {
-                                    if (res.status) {
-                                        _this.$message.success("删除成功");
-                                        _this.getDetail()
-                                    } else {
-                                        _this.$message.error(res.msg);
-                                    }
-                                }
-                            })
-                        }).catch(() => {
+                        layer.confirm('是否确认删除"' + item.name + '" ？', {}, function () {
+                            _this.doDeleteItem(item)
                         })
                     },
-                    editEvent(editItem) {
-                        this.form = editItem;
-                        this.cert_path = this.form.cert_path;
-                        this.key_path = this.form.key_path;
-                        this.dialogFormVisible = true
-                    },
-                    getDetail() {
+                    doDeleteItem: function (item) {
                         var _this = this;
+                        //确认删除
                         $.ajax({
-                            url: "{:U('Wechat/Wechat/index')}",
-                            dataType: 'json',
-                            type: 'get',
-                            success: function (res) {
-                                console.log("res", res);
-                                if (res.status) {
-                                    _this.offices = res.data;
-                                    _this.dialogFormVisible = false
-                                }
-                            }
-                        })
-                    },
-                    submitEvent() {
-                        console.log("submitEvent", this.form);
-                        var _this = this
-                        $.ajax({
-                            url: "{:U('Wechat/Wechat/editOffice')}",
-                            data: this.form,
+                            url: "{:U('Wechat/Wechat/deleteOffice')}",
+                            data: {id: item.id},
                             dataType: 'json',
                             type: 'post',
                             success: function (res) {
                                 if (res.status) {
-                                    _this.$message.success("操作成功");
-                                    _this.getDetail()
+                                    layer.msg('删除成功')
+                                    _this.getList()
                                 } else {
-                                    _this.$message.error(res.msg);
+                                    layer.msg(res.msg)
                                 }
                             }
                         })
                     },
+                    editEvent: function (editItem) {
+                        var _this = this
+                        layer.open({
+                            type: 2,
+                            title: '操作',
+                            content: "/Wechat/Wechat/editOffice?id=" + editItem.id,
+                            area: ['80%', '70%'],
+                            end: function () {
+                                _this.getList()
+                            }
+                        })
+                    },
+                    getList: function () {
+                        var _this = this;
+                        $.ajax({
+                            url: "{:U('Wechat/Wechat/index')}",
+                            data: this.form,
+                            dataType: 'json',
+                            type: 'get',
+                            success: function (res) {
+                                if (res.status) {
+                                    _this.offices = res.data.items
+                                    _this.total = res.data.total_items
+                                    _this.form.page = res.data.page
+                                    _this.form.limit = res.data.limit
+                                }
+                            }
+                        })
+                    },
+
                     addEvent: function () {
-                        this.form = {
-                            id: 0,
-                            name: "",
-                            account_type: "office",
-                            app_id: "",
-                            secret: "",
-                            mch_id: "",
-                            key: "",
-                            cert_path: "",
-                            key_path: ""
-                        };
-                        this.cert_path = "";
-                        this.key_path = "";
-                        this.dialogFormVisible = true
+                        var _this = this
+                        layer.open({
+                            type: 2,
+                            title: '操作',
+                            content: "/Wechat/Wechat/editOffice",
+                            area: ['80%', '70%'],
+                            end: function () {
+                                _this.getList()
+                            }
+                        })
                     }
                 }
             })
-        });
+        })
     </script>
 </block>
 
