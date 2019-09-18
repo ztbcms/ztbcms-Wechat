@@ -11,30 +11,57 @@ namespace Wechat\Controller;
 use Common\Controller\AdminBase;
 use Wechat\Model\OfficesModel;
 
+/**
+ * 微信(公众号+小程序)管理
+ * Class WechatController
+ * @package Wechat\Controller
+ */
 class WechatController extends AdminBase
 {
     function index()
     {
         if (IS_AJAX) {
             $accountType = I('get.account_type');
+            $page = I('get.page', 1);
+            $limit = I('get.limit', 20);
             $where = [];
             if ($accountType) {
                 $where['account_type'] = $accountType;
             }
             $OfficesModel = new OfficesModel();
-            $offices = $OfficesModel->where($where)->order("id DESC")->select();
-            $this->ajaxReturn(self::createReturn(true, $offices, '获取成功'));
+            $offices = $OfficesModel->where($where)->order("id DESC")->page($page)->limit($limit)->select();
+            $total_items = $OfficesModel->where($where)->count();
+            $total_pages = ceil($total_items) / $limit;
+            $this->ajaxReturn(self::createReturnList(true, $offices, $page, $limit, $total_items, $total_pages));
         } else {
             $this->display();
         }
     }
 
     /**
-     * 新增/编辑公众号
-     *
-     * @throws \Think\Exception
+     * 获取详情
+     */
+    function getOfficeDetail()
+    {
+        $id = I('id');
+        $OfficesModel = new OfficesModel();
+        $res = $OfficesModel->where(['id' => ['EQ', $id]])->find();
+        $this->ajaxReturn(self::createReturn(true, $res));
+    }
+
+    /**
+     * 编辑公众号
      */
     function editOffice()
+    {
+        $this->display();
+    }
+
+    /**
+     * 新增/编辑公众号
+     *
+     */
+    function doEditOffice()
     {
         $id = I('post.id');
         $name = I('post.name');
@@ -48,7 +75,7 @@ class WechatController extends AdminBase
         $token = I('post.token');
         $aesKey = I('post.aes_key');
         $postData = [
-            'name'         => $name,
+            'name' => $name,
             'account_type' => $accountType,
             'app_id'       => $appId,
             'secret'       => $secret,
@@ -71,7 +98,6 @@ class WechatController extends AdminBase
     /**
      * 删除公众号
      *
-     * @throws \Think\Exception
      */
     function deleteOffice()
     {
@@ -104,7 +130,7 @@ class WechatController extends AdminBase
         $res = $upload->upload();
         if ($res) {
             $file = $upload->getUploadFileInfo()[0];
-            $path = $file['savepath'].$file['savename'];
+            $path = $file['savepath'] . $file['savename'];
             $this->ajaxReturn(self::createReturn(true, ['path' => $path], '上传成功'));
         } else {
             $this->ajaxReturn(self::createReturn(false, [], $upload->getErrorMsg()));
