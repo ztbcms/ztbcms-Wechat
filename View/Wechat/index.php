@@ -65,8 +65,12 @@
                             align="center"
                             min-width="180">
                         <template slot-scope="scope">
-                            <el-button @click="editEvent(scope.row)" type="primary" size="small">编辑</el-button>
-                            <el-button @click="deleteEvent(scope.row)" type="danger" size="small">删除</el-button>
+                            <template v-if="scope.row.account_type == 'office'">
+                                <el-button @click="showOauthUrl(scope.row.app_id)" type="text" size="small">授权地址</el-button>
+                                <el-button @click="showOauthBase(scope.row.app_id)" type="text" size="small">静默授权地址</el-button>
+                            </template>
+                            <el-button @click="editEvent(scope.row)" type="text" size="small">编辑</el-button>
+                            <el-button @click="deleteEvent(scope.row)" type="text" size="small" style="color: red">删除</el-button>
                         </template>
                     </el-table-column>
                 </el-table>
@@ -175,6 +179,16 @@
                                 _this.getList()
                             }
                         })
+                    },
+                    showOauthUrl: function (app_id) {
+                        var urlObj = window.Ztbcms.parserUrl(window.location.href)
+                        console.log(urlObj)
+                        layer.alert(urlObj.protocol + '//' + urlObj.host + '/Wechat/Auth/oauth/appid/' + app_id)
+                    },
+                    showOauthBase: function (app_id) {
+                        var urlObj = window.Ztbcms.parserUrl(window.location.href)
+                        console.log(urlObj)
+                        layer.alert(urlObj.protocol + '//' + urlObj.host + '/Wechat/Auth/oauthBase/appid/' + app_id)
                     }
                 }
             })
