@@ -35,7 +35,7 @@ class MiniService extends BaseService
 
                 'log' => [
                     'level' => 'debug',
-                    'file'  => __DIR__.'/wechat.log',
+                    'file'  => C("UPLOADFILEPATH").'/wechat.log',
                 ],
             ];
             $this->app_id = $app_id;

@@ -105,7 +105,7 @@ class AutoTokenModel extends Model
                 'app_id'  => $res['app_id'],
                 'open_id' => $res['open_id']
             ];
-            if ($res == OfficesModel::ACCOUNT_TYPE_OFFICE) {
+            if ($res['app_account_type'] == OfficesModel::ACCOUNT_TYPE_OFFICE) {
                 //公众号用户
                 $officeUsersModel = new OfficeUsersModel();
                 $userInfo = $officeUsersModel->where($userWhere)->find();
