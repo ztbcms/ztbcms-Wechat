@@ -283,3 +283,17 @@ CREATE TABLE `cms_wechat_office_media` (
   `create_time` int(11) DEFAULT '0' COMMENT '创建时间',
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8mb4;
+
+
+DROP TABLE IF EXISTS `cms_wechat_office_qrcode`;
+CREATE TABLE `cms_wechat_office_qrcode` (
+  `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
+  `app_id` varchar(64) DEFAULT '',
+  `param` varchar(32) DEFAULT '' COMMENT '二维码参数',
+  `expire_time` int(11) DEFAULT '0' COMMENT '过期时间',
+  `type` tinyint(1) DEFAULT '0' COMMENT '二维码类型，0是临时，1是永久',
+  `file_path` varchar(512) DEFAULT '' COMMENT '文件路径',
+  `qrcode_url` varchar(512) DEFAULT '' COMMENT '访问地址',
+  `create_time` int(11) DEFAULT NULL COMMENT '创建时间',
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8mb4;

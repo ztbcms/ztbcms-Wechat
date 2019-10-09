@@ -8,7 +8,7 @@
             <div>
                 <el-form :inline="true" :model="searchData" class="demo-form-inline">
                     <el-form-item label="appid">
-                        <el-input v-model="searchData.app_id" placeholder="请输入小程序appid"></el-input>
+                        <el-input v-model="searchData.app_id" placeholder="请输入公众号appid"></el-input>
                     </el-form-item>
                     <el-form-item>
                         <el-button type="primary" @click="searchEvent">查询</el-button>
@@ -30,7 +30,7 @@
                             min-width="180">
                     </el-table-column>
                     <el-table-column
-                            label="小程序码"
+                            label="参数二维码"
                             align="center"
                             min-width="100">
                         <template slot-scope="scope">
@@ -118,13 +118,13 @@
                     width="500px">
                 <div>
                     <el-form label-width="120px">
-                        <el-form-item label="选择小程序">
-                            <el-select v-model="createAppId" placeholder="请选择小程序">
+                        <el-form-item label="选择小公众号">
+                            <el-select v-model="createAppId" placeholder="请选择公众号">
                                 <el-option v-for="item in offices" :label="item.name"
                                            :value="item.app_id"></el-option>
                             </el-select>
                         </el-form-item>
-                        <el-form-item label="小程序码类型">
+                        <el-form-item label="二维码类型">
                             <el-radio v-model="createCodeType" label="0">临时</el-radio>
                             <el-radio v-model="createCodeType" label="1">永久</el-radio>
                         </el-form-item>
@@ -133,7 +133,7 @@
                                              label="过期时间"></el-input-number>
                         </el-form-item>
                         <el-form-item label="二维码参数">
-                            <el-input v-model="createCodeParam" placeholder="请输入小程序码参数"></el-input>
+                            <el-input v-model="createCodeParam" placeholder="请输入二维码参数"></el-input>
                             <div v-if="createCodeType=='0'" class="tip">
                                 临时类二维码参数可以是32位内字符串
                             </div>
@@ -219,9 +219,9 @@
                     },
                     getOffices: function () {
                         const _this = this;
-                        //获取小程序
+                        //获取公众号
                         this.httpGet('{:U("Wechat/Wechat/index")}', {account_type: "office"}, function (res) {
-                            _this.offices = res.data;
+                            _this.offices = res.data.items;
                             if (_this.offices.length > 0) {
                                 _this.createAppId = _this.offices[0].app_id;
                             }
