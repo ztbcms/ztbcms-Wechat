@@ -65,6 +65,7 @@ class AuthController extends Base
      * @param $appid
      *
      * @throws Exception
+     * @throws \ReflectionException
      */
     function callback($appid)
     {
@@ -145,7 +146,27 @@ class AuthController extends Base
     }
 
     /**
+     * 授权微信小程序手机号
+     *
+     * @param $appid
+     *
+     * @throws DecryptException
+     * @throws InvalidConfigException
+     * @throws Exception
+     */
+    function miniAuthPhone($appid)
+    {
+        $code = I('post.code');
+        $iv = I('post.iv');
+        $encryptedData = I('encrypted_data');
+        $miniUsersModel = new MiniUsersService($appid);
+        $res = $miniUsersModel->getPhoneNumberByCode($code, $iv, $encryptedData);
+        $this->ajaxReturn($res);
+    }
+
+    /**
      * 通过临时登录凭证code 获取token信息
+     *
      * @throws Exception
      */
     function getTokenByCode()
