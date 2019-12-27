@@ -10,17 +10,17 @@ return array(
 	//图标
 	'icon' => 'https://dn-coding-net-production-pp.qbox.me/e57af720-f26c-4f3b-90b9-88241b680b7b.png',
 	//模块简介
-	'introduce' => '基于easyWechat4.1 版本独立开发微信板块，需要php >= 7.0',
+	'introduce' => '基于easyWechat4.2 版本独立开发微信板块，需要php >= 7.0',
 	//模块介绍地址
 	'address' => 'http://doc.ztbcms.com/module/wechat/',
 	//模块作者
-	'author' => 'zhlhuang',
+	'author' => 'zhlhuang,jayin',
 	//作者地址
 	'authorsite' => 'http://ztbcms.com',
 	//作者邮箱
 	'authoremail' => 'admin@ztbcms.com',
 	//版本号，请不要带除数字外的其他字符
-	'version' => '0.2.0.0',
+	'version' => '0.3.0.0',
 	//适配最低CMS版本，
 	'adaptation' => '3.8.0.0',
 	//签名

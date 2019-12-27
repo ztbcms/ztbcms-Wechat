@@ -14,7 +14,7 @@ CREATE TABLE `cms_wechat_offices` (
   `create_time` int(11) DEFAULT NULL COMMENT '创建时间',
   `update_time` int(11) DEFAULT NULL COMMENT '更新时间',
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8mb4;
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8mb4;
 
 DROP TABLE IF EXISTS `cms_wechat_auto_token`;
 CREATE TABLE `cms_wechat_auto_token` (
@@ -28,7 +28,7 @@ CREATE TABLE `cms_wechat_auto_token` (
   `refresh_token` varchar(128) DEFAULT '' COMMENT '刷新token',
   `create_time` int(11) DEFAULT '0' COMMENT '创建时间',
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8mb4;
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8mb4;
 
 DROP TABLE IF EXISTS `cms_wechat_mini_users`;
 CREATE TABLE `cms_wechat_mini_users` (
@@ -47,7 +47,7 @@ CREATE TABLE `cms_wechat_mini_users` (
   `create_time` int(10) DEFAULT '0' COMMENT '创建时间',
   `update_time` int(10) DEFAULT '0' COMMENT '更新时间',
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8mb4;
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8mb4;
 
 DROP TABLE IF EXISTS `cms_wechat_mini_template_list`;
 CREATE TABLE `cms_wechat_mini_template_list` (
@@ -60,7 +60,7 @@ CREATE TABLE `cms_wechat_mini_template_list` (
   `create_time` int(11) DEFAULT NULL COMMENT '添加时间',
   `update_time` int(11) DEFAULT NULL COMMENT '更新时间',
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8mb4;
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8mb4;
 
 
 DROP TABLE IF EXISTS `cms_wechat_mini_phone_number`;
@@ -74,7 +74,7 @@ CREATE TABLE `cms_wechat_mini_phone_number` (
   `create_time` int(11) DEFAULT '0' COMMENT '创建时间',
   `update_time` int(11) DEFAULT '0' COMMENT '更新时间',
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8mb4;
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8mb4;
 
 DROP TABLE IF EXISTS `cms_wechat_mini_form_id`;
 CREATE TABLE `cms_wechat_mini_form_id` (
@@ -87,7 +87,7 @@ CREATE TABLE `cms_wechat_mini_form_id` (
   `send_time` int(11) DEFAULT '0' COMMENT '发送时间',
   `create_time` int(11) DEFAULT '0' COMMENT '创建时间',
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8mb4;
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8mb4;
 
 DROP TABLE IF EXISTS `cms_wechat_mini_code`;
 CREATE TABLE `cms_wechat_mini_code` (
@@ -101,7 +101,7 @@ CREATE TABLE `cms_wechat_mini_code` (
   `create_time` int(11) DEFAULT NULL COMMENT '创建时间',
   `update_time` int(11) DEFAULT NULL COMMENT '创建时间',
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8mb4;
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8mb4;
 
 DROP TABLE IF EXISTS `cms_wechat_wxpay_mchpay`;
 CREATE TABLE `cms_wechat_wxpay_mchpay` (
@@ -118,7 +118,7 @@ CREATE TABLE `cms_wechat_wxpay_mchpay` (
   `create_time` int(11) DEFAULT '0' COMMENT '创建时间',
   `update_time` int(11) DEFAULT '0' COMMENT '更新时间',
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8mb4;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 DROP TABLE IF EXISTS `cms_wechat_wxpay_order`;
 CREATE TABLE `cms_wechat_wxpay_order` (
@@ -143,7 +143,7 @@ CREATE TABLE `cms_wechat_wxpay_order` (
   `create_time` int(11) DEFAULT '0' COMMENT '支付时间',
   `update_time` int(11) DEFAULT '0' COMMENT '更新时间',
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=9 DEFAULT CHARSET=utf8mb4;
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8mb4;
 
 DROP TABLE IF EXISTS `cms_wechat_wxpay_redpack`;
 CREATE TABLE `cms_wechat_wxpay_redpack` (
@@ -163,7 +163,7 @@ CREATE TABLE `cms_wechat_wxpay_redpack` (
   `create_time` int(11) DEFAULT '0' COMMENT '创建时间',
   `update_time` int(11) DEFAULT '0' COMMENT '更新时间',
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8mb4;
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8mb4;
 
 DROP TABLE IF EXISTS `cms_wechat_wxpay_refund`;
 CREATE TABLE `cms_wechat_wxpay_refund` (
@@ -181,7 +181,7 @@ CREATE TABLE `cms_wechat_wxpay_refund` (
   `create_time` int(11) DEFAULT '0' COMMENT '创建时间',
   `update_time` int(11) DEFAULT '0' COMMENT '更新时间',
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=9 DEFAULT CHARSET=utf8mb4;
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8mb4;
 
 DROP TABLE IF EXISTS `cms_wechat_office_users`;
 CREATE TABLE `cms_wechat_office_users` (
@@ -199,7 +199,7 @@ CREATE TABLE `cms_wechat_office_users` (
   `create_time` int(11) DEFAULT '0' COMMENT '创建时间',
   `update_time` int(11) DEFAULT '0' COMMENT '更新时间',
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8mb4;
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8mb4;
 
 DROP TABLE IF EXISTS `cms_wechat_office_template_list`;
 CREATE TABLE `cms_wechat_office_template_list` (
@@ -214,7 +214,7 @@ CREATE TABLE `cms_wechat_office_template_list` (
   `create_time` int(11) DEFAULT NULL COMMENT '添加时间',
   `update_time` int(11) DEFAULT NULL COMMENT '更新时间',
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=26 DEFAULT CHARSET=utf8mb4;
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8mb4;
 
 DROP TABLE IF EXISTS `cms_wechat_office_send_template_record`;
 CREATE TABLE `cms_wechat_office_send_template_record` (
@@ -228,7 +228,7 @@ CREATE TABLE `cms_wechat_office_send_template_record` (
   `result` varchar(128) DEFAULT '' COMMENT '调用结果',
   `create_time` int(11) DEFAULT NULL COMMENT '创建时间',
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8mb4;
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8mb4;
 
 DROP TABLE IF EXISTS `cms_wechat_office_message`;
 CREATE TABLE `cms_wechat_office_message` (
@@ -253,7 +253,7 @@ CREATE TABLE `cms_wechat_office_message` (
   `description` varchar(256) DEFAULT '' COMMENT '链接介绍',
   `url` varchar(256) DEFAULT '' COMMENT '分享链接url',
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8mb4;
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8mb4;
 
 DROP TABLE IF EXISTS `cms_wechat_office_event_message`;
 CREATE TABLE `cms_wechat_office_event_message` (
@@ -270,7 +270,7 @@ CREATE TABLE `cms_wechat_office_event_message` (
   `longitude` varchar(32) DEFAULT '' COMMENT '地理位置经度',
   `precision` varchar(32) DEFAULT '' COMMENT '地址位置精确度',
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8mb4;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 DROP TABLE IF EXISTS `cms_wechat_office_media`;
 CREATE TABLE `cms_wechat_office_media` (
@@ -282,7 +282,7 @@ CREATE TABLE `cms_wechat_office_media` (
   `file_type` varchar(32) DEFAULT '' COMMENT '文件类型',
   `create_time` int(11) DEFAULT '0' COMMENT '创建时间',
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8mb4;
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8mb4;
 
 
 DROP TABLE IF EXISTS `cms_wechat_office_qrcode`;
@@ -296,4 +296,31 @@ CREATE TABLE `cms_wechat_office_qrcode` (
   `qrcode_url` varchar(512) DEFAULT '' COMMENT '访问地址',
   `create_time` int(11) DEFAULT NULL COMMENT '创建时间',
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8mb4;
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8mb4;
+
+DROP TABLE IF EXISTS `cms_wechat_mini_subscribe_message`;
+CREATE TABLE `cms_wechat_mini_subscribe_message` (
+  `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
+  `app_id` varchar(128) DEFAULT NULL COMMENT '小程序appid',
+  `template_id` varchar(128) DEFAULT NULL COMMENT '添加至帐号下的模板 id，发送小程序订阅消息时所需',
+  `title` varchar(512) DEFAULT NULL COMMENT '模版标题',
+  `content` text COMMENT '模版内容',
+  `example` text COMMENT '模板内容示例',
+  `type` varchar(16) DEFAULT NULL COMMENT '模版类型，2 为一次性订阅，3 为长期订阅',
+  `create_time` int(11) DEFAULT NULL COMMENT '创建时间',
+  `update_time` int(11) DEFAULT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='小程序订阅消息';
+
+DROP TABLE IF EXISTS `cms_wechat_mini_send_message_record`;
+CREATE TABLE `cms_wechat_mini_send_message_record` (
+  `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
+  `app_id` varchar(64) DEFAULT '',
+  `open_id` varchar(128) DEFAULT '' COMMENT '接受用户open_id',
+  `template_id` varchar(128) DEFAULT '' COMMENT '发送模板id',
+  `page` varchar(512) DEFAULT '' COMMENT '跳转页面l',
+  `data` varchar(1024) DEFAULT '' COMMENT '发送信息',
+  `result` varchar(128) DEFAULT '' COMMENT '调用结果',
+  `create_time` int(11) DEFAULT NULL COMMENT '创建时间',
+  PRIMARY KEY (`id`) USING BTREE
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8mb4 ROW_FORMAT=DYNAMIC COMMENT='小程序消息发送记录';
