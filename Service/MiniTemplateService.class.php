@@ -11,6 +11,7 @@ namespace Wechat\Service;
 
 use Wechat\Model\MiniFormIdModel;
 use Wechat\Model\MiniTemplateListModel;
+use Wechat\Model\OfficeSendTemplateRecordModel;
 
 class MiniTemplateService extends MiniService
 {
@@ -90,6 +91,67 @@ class MiniTemplateService extends MiniService
         } else {
             return self::createReturn(false, [], '添加form_id失败');
         }
+    }
+
+    /**
+     * 发送统一模板消息
+     * @param $mp_appid
+     * @param $openId
+     * @param $templateId
+     * @param $data
+     * @param string $url
+     * @param string $page
+     * @return array
+     */
+    function sendUniformMessage($mp_appid, $openId, $templateId, $data, $url = '', $page = ''){
+        $miniProgram = [
+            'appid' => $this->app_id,
+            'pagepath' => $page
+        ];
+        $sendData = [
+            'touser' => $openId,
+            'weapp_template_msg' => [],
+            'mp_template_msg' => [
+                'appid' => $mp_appid,
+                'template_id' => $templateId,
+                'url' => $url,
+                'miniprogram' => $miniProgram,
+                'data' => $data
+            ]
+        ];
+        $res = $this->app->uniform_message->send($sendData);
+        if ($res['errcode'] == 0) {
+            //发送成功
+            $addData = [
+                'app_id'      => $mp_appid,
+                'open_id'     => $openId,
+                'template_id' => $templateId,
+                'url'         => $url,
+                'result'      => '发送成功',
+                'miniprogram' => json_encode($miniProgram),
+                'data'        => json_encode($data),
+                'create_time' => time()
+            ];
+            $sendTemplateModel = new OfficeSendTemplateRecordModel();
+            $sendTemplateModel->add($addData);
+            $response = self::createReturn(true, [], '发送成功');
+        } else {
+            //发送失败，记录发送结果
+            $addData = [
+                'app_id'      => $this->app_id,
+                'open_id'     => $openId,
+                'template_id' => $templateId,
+                'url'         => $url,
+                'result'      => $res['errmsg'],
+                'miniprogram' => json_encode($miniProgram),
+                'data'        => json_encode($data),
+                'create_time' => time()
+            ];
+            $sendTemplateModel = new OfficeSendTemplateRecordModel();
+            $sendTemplateModel->add($addData);
+            $response = self::createReturn(false, [], '发送失败：'.$res['errmsg']);
+        }
+        return $response;
     }
 
     /**
