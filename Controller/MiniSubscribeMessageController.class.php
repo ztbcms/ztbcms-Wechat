@@ -11,6 +11,7 @@ namespace Wechat\Controller;
 use Common\Controller\AdminBase;
 use Wechat\Model\MiniSendMessageRecordModel;
 use Wechat\Model\MiniSubscribeMessageModel;
+use Wechat\Model\OfficesModel;
 use Wechat\Service\MiniSubscribeMessageService;
 
 class MiniSubscribeMessageController extends AdminBase
@@ -42,9 +43,14 @@ class MiniSubscribeMessageController extends AdminBase
 
     function doSyncSubscribeMessageList()
     {
-        $app_id = I('app_id');
-        $service = new MiniSubscribeMessageService($app_id);
-        $res = $service->syncSubscribeMessageList();
+        $miniOfiiceModel = new OfficesModel();
+        $minioffices = $miniOfiiceModel->where(['account_type' => OfficesModel::ACCOUNT_TYPE_MINI])->field("app_id")->select();
+        $res=self::createReturn(true,[],'同步完成');
+        foreach ($minioffices as $minioffice) {
+            $appId = $minioffice['app_id'];
+            $service = new MiniSubscribeMessageService($appId);
+            $res = $service->syncSubscribeMessageList();
+        }
         $this->ajaxReturn($res);
     }
 
