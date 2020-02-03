@@ -204,6 +204,7 @@
                         this.httpPost("{:U('Wechat/Mini/createCode')}", postData, function (res) {
                             if (res.status) {
                                 _this.$message.success("创建成功");
+                                _this.createDialogVisible = false;
                                 _this.page = 1;
                                 _this.getCodeList();
                             } else {
@@ -215,7 +216,7 @@
                         const _this = this;
                         //获取小程序
                         this.httpGet('{:U("Wechat/Wechat/index")}', {account_type: "mini"}, function (res) {
-                            _this.miniOffices = res.data;
+                            _this.miniOffices = res.data.items;
                             if (_this.miniOffices.length > 0) {
                                 _this.createAppId = _this.miniOffices[0].app_id;
                             }

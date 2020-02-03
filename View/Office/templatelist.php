@@ -216,7 +216,7 @@
                                     const splitStr = exampleArray[index].split("：");
                                     keywords.push({
                                         title: splitStr[0],
-                                        key: 'keyword' + (parseInt(index) + 1),
+                                        key: 'keyword' + (parseInt(index)),
                                         example: splitStr[1],
                                         value: splitStr[1]
                                     })

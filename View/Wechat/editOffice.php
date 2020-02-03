@@ -104,7 +104,7 @@
                         }
                     },
                     getDetail() {
-                        var _this = this
+                        var _this = this;
                         if (!this.form.id) {
                             return
                         }
@@ -121,7 +121,7 @@
                         })
                     },
                     submitEvent() {
-                        var _this = this
+                        var _this = this;
                         $.ajax({
                             url: "{:U('Wechat/Wechat/doEditOffice')}",
                             data: _this.form,
@@ -129,8 +129,11 @@
                             type: 'post',
                             success: function (res) {
                                 if (res.status) {
-                                    layer.msg('操作成功')
-                                    _this.getDetail()
+                                    layer.msg('操作成功');
+                                    _this.getDetail();
+                                    setTimeout(function () {
+                                        window.parent.layer.closeAll();
+                                    }, 2000);
                                 } else {
                                     layer.msg(res.msg)
                                 }

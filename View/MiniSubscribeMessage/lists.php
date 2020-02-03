@@ -17,7 +17,7 @@
                         <el-button type="primary" @click="searchEvent">筛选</el-button>
                     </el-form-item>
                     <el-form-item>
-                        <el-button type="primary" @click="syncEvent">同步模板消息</el-button>
+                        <el-button type="primary" @click="doSync">同步模板消息</el-button>
                     </el-form-item>
                 </el-form>
             </div>
@@ -134,7 +134,7 @@
                 },
                 methods: {
                     testSendEvent: function(row) {
-                        var that = this
+                        var that = this;
                         layer.open({
                             type: 2,
                             title: '操作',
@@ -142,27 +142,9 @@
                             area: ['90%', '90%'],
                         })
                     },
-                    syncEvent: function() {
+                    doSync: function () {
                         var that = this;
-
-                        layer.prompt({
-                            formType: 2,
-                            value: '',
-                            title: '请输入值APPID',
-                            // area: ['80px', '350px'] //自定义文本域宽高
-                        }, function (value, index, elem) {
-                            layer.close(index);
-                            that.doSync(value)
-                        });
-
-                    },
-                    doSync: function (app_id) {
-                        var that = this
-                        if(!app_id){
-                            layer.msg('请指定APPID')
-                            return
-                        }
-                        this.httpGet("/Wechat/MiniSubscribeMessage/doSyncSubscribeMessageList", {app_id: app_id}, function (res) {
+                        this.httpGet("/Wechat/MiniSubscribeMessage/doSyncSubscribeMessageList", {}, function (res) {
                             if (res.status) {
                                 that.$message.success("同步成功");
                                 that.getList();
