@@ -44,4 +44,19 @@ class MiniService extends BaseService
             return self::createReturn(false, [], "找不到该小程序信息");
         }
     }
+
+    /**
+     * 内容安全检查
+     *
+     * @param $content
+     * @return array
+     */
+    function checkContent($content){
+        $res = $this->app->content_security->checkText($content);
+        if($res['errcode'] == '87014'){
+            return self::createReturn(false, null, '内容含有敏感信息');
+        }else{
+            return self::createReturn(true, null, 'ok');
+        }
+    }
 }
