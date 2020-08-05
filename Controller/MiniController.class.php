@@ -17,6 +17,11 @@ use Wechat\Model\OfficesModel;
 use Wechat\Service\MiniCodeService;
 use Wechat\Service\MiniTemplateService;
 
+/**
+ * 小程序二维码
+ * Class MiniController
+ * @package Wechat\Controller
+ */
 class MiniController extends AdminBase
 {
     /**

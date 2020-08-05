@@ -14,6 +14,10 @@ use Wechat\Model\MiniSubscribeMessageModel;
 use Wechat\Model\OfficesModel;
 use Wechat\Service\MiniSubscribeMessageService;
 
+/**
+ * Class MiniSubscribeMessageController
+ * @package Wechat\Controller
+ */
 class MiniSubscribeMessageController extends AdminBase
 {
     /**
@@ -41,6 +45,9 @@ class MiniSubscribeMessageController extends AdminBase
         $this->display();
     }
 
+    /**
+     * 同步订阅消息
+     */
     function doSyncSubscribeMessageList()
     {
         $miniOfiiceModel = new OfficesModel();
@@ -54,6 +61,9 @@ class MiniSubscribeMessageController extends AdminBase
         $this->ajaxReturn($res);
     }
 
+    /**
+     * 获取订阅消息详情
+     */
     function getDetail()
     {
         $id = I('id');
@@ -81,11 +91,17 @@ class MiniSubscribeMessageController extends AdminBase
         $this->ajaxReturn(self::createReturn(true, $msg));
     }
 
+    /**
+     * 订阅消息详情
+     */
     function testSend()
     {
         $this->display();
     }
 
+    /**
+     * 发送测试订阅消息
+     */
     function doTestSend()
     {
         $app_id = I('app_id');

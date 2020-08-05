@@ -57,6 +57,12 @@ return [
                         "status" => 1,
                         "name"   => "消息发送记录",
                     ],
+                    [
+                        "route"  => "Wechat/MiniLive/lists",
+                        "type"   => 0,
+                        "status" => 1,
+                        "name"   => "直播管理",
+                    ],
                 ]
             ], [
                 "route"  => "Wechat/Office/index",
