@@ -12,6 +12,11 @@ namespace Wechat\Controller;
 use Common\Controller\Base;
 use Wechat\Service\OfficeService;
 
+/**
+ * 消息接收
+ * Class ServerController
+ * @package Wechat\Controller
+ */
 class ServerController extends Base
 {
     /**

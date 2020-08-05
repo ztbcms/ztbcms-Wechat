@@ -19,6 +19,11 @@ use Wechat\Model\OfficeUsersModel;
 use Wechat\Service\OfficeQrcodeService;
 use Wechat\Service\OfficeTemplateService;
 
+/**
+ * 公众号消息模板
+ * Class OfficeController
+ * @package Wechat\Controller
+ */
 class OfficeController extends AdminBase
 {
 
@@ -44,6 +49,9 @@ class OfficeController extends AdminBase
         }
     }
 
+    /**
+     * 消息模板列表
+     */
     function messageList()
     {
         if (IS_AJAX) {

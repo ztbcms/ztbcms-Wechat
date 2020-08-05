@@ -12,6 +12,11 @@ namespace Wechat\Controller;
 use Common\Controller\Base;
 use Wechat\Service\OfficeService;
 
+/**
+ * 获取jssdk
+ * Class IndexController
+ * @package Wechat\Controller
+ */
 class IndexController extends Base
 {
     /**

@@ -8,7 +8,6 @@
 
 namespace Wechat\Controller;
 
-
 use Common\Controller\Base;
 use EasyWeChat\Kernel\Exceptions\DecryptException;
 use EasyWeChat\Kernel\Exceptions\InvalidConfigException;
@@ -18,6 +17,11 @@ use Wechat\Model\OfficeUsersModel;
 use Wechat\Service\MiniUsersService;
 use Wechat\Service\OfficeService;
 
+/**
+ * 登录授权模块
+ * Class AuthController
+ * @package Wechat\Controller
+ */
 class AuthController extends Base
 {
 
