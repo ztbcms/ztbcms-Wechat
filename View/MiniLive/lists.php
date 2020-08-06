@@ -28,6 +28,36 @@
                 </el-form>
             </div>
 
+            <div class="modal fade" id="paramModel" tabindex="-1"
+                 role="dialog" aria-labelledby="myModalLabel"
+                 style="margin-bottom: 20px;"
+            >
+                <div class="modal-dialog" role="document">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h4 class="modal-title" id="myModalLabel"> 查看回放json </h4>
+                        </div>
+                        <div class="modal-body">
+                            <code>{</code><br>
+                            </tba><div v-for="(item,key) in param" :key="key">
+                                &nbsp;&nbsp;<code>"{{ key }}" : </code>
+                                <template v-if="'object' !== typeof(param[key])">
+                                    <code>"{{ param[key] }}",</code>
+                                </template>
+                                <template v-else >
+                                    <br>&emsp;&nbsp;&nbsp;&nbsp;<code>{</code>
+                                    <template v-for="(i,k) in param[key]" :k="k">
+                                        <br>&emsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<code>"{{ k }}" : "{{ param[key][k] }}",</code>
+                                    </template>
+                                    <br>&emsp;&nbsp;&nbsp;&nbsp;<code>}</code>
+                                </template>
+                            </div>
+                            <code>}</code><br>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
             <div>
                 <el-table
                     :data="users"
@@ -109,8 +139,19 @@
                             align="center"
                             min-width="120">
                     </el-table-column>
+
+                    <el-table-column
+                            fixed="right"
+                            label="操作"
+                            align="center"
+                            width="220">
+                        <template slot-scope="scope">
+                            <el-button @click="getPlaybacks(scope.row)" type="primary">查看回放</el-button>
+                        </template>
+                    </el-table-column>
                 </el-table>
             </div>
+
             <div class="page-container">
                 <el-pagination
                     background
@@ -150,6 +191,7 @@
                     limit: 10,
                     totalPages: 0,
                     totalItems: 0,
+                    param: []
                 },
                 mounted() {
                     this.getList();
@@ -184,6 +226,19 @@
                             if (res.status) {
                                 that.$message.success("同步成功");
                                 that.getList();
+                            } else {
+                                that.$message.error(res.msg);
+                            }
+                        })
+                    },
+                    getPlaybacks: function (row) {
+                        var that = this;
+                        this.httpGet("/Wechat/MiniLive/getPlaybacks", {
+                            app_id : row.app_id,
+                            roomId : row.roomid
+                        }, function (res) {
+                            if (res.status) {
+                                that.param = res.data;
                             } else {
                                 that.$message.error(res.msg);
                             }
