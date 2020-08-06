@@ -57,12 +57,24 @@ class MiniLiveController extends AdminBase
             ->where([
                 'account_type' => OfficesModel::ACCOUNT_TYPE_MINI
             ])
-            ->field("app_id,secret")
+            ->field("app_id")
             ->select();
+
         foreach ($minioffices as $k => $v){
-            MiniLiveService::sysMiniLive($v['app_id'],$v['secret']);
+            $MiniLiveService = new MiniLiveService($v['app_id']);
+            $MiniLiveService->sysMiniLive();
         }
         $this->ajaxReturn(self::createReturn(true,[],'同步完成'));
     }
 
+    /**
+     * 查看回放
+     */
+    public function getPlaybacks(){
+        $app_id = I('app_id','','trim');
+        $roomId = I('roomId','','trim');
+        $MiniLiveService = new MiniLiveService($app_id);
+        $res = $MiniLiveService->getPlaybacks();
+        $this->ajaxReturn($res);
+    }
 }
