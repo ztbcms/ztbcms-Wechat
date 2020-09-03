@@ -7,8 +7,8 @@ CREATE TABLE `cms_wechat_offices` (
   `secret` varchar(128) DEFAULT '' COMMENT '公众号secret',
   `mch_id` varchar(64) DEFAULT '' COMMENT '微信支付mch_id',
   `key` varchar(128) DEFAULT '' COMMENT '微信支付key',
-  `cert_path` varchar(512) DEFAULT '' COMMENT '微信支付公钥',
-  `key_path` varchar(512) DEFAULT '' COMMENT '微信支付私钥',
+  `cert_path` varchar(4096) DEFAULT '' COMMENT '微信支付公钥',
+  `key_path` varchar(4096) DEFAULT '' COMMENT '微信支付私钥',
   `token` varchar(128) DEFAULT '' COMMENT '接收服务消息的token',
   `aes_key` varchar(64) DEFAULT '' COMMENT '启动开发配置的 aes_key',
   `create_time` int(11) DEFAULT NULL COMMENT '创建时间',
@@ -336,10 +336,24 @@ CREATE TABLE `cms_wechat_mini_live`  (
   `start_time` int(10) UNSIGNED NOT NULL DEFAULT 0 COMMENT '直播计划开始时间，列表按照 start_time 降序排列',
   `end_time` int(10) UNSIGNED NOT NULL DEFAULT 0 COMMENT '直播计划结束时间',
   `anchor_name` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL COMMENT '主播名',
-  `anchor_img` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL COMMENT '主播图片',
-  `total` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL COMMENT '数量',
+  `anchor_img` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL DEFAULT '' COMMENT '主播图片',
+  `total` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL DEFAULT '0' COMMENT '数量',
   `share_img` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL COMMENT '分享图片',
   `browse_num` int(10) UNSIGNED NOT NULL DEFAULT 0 COMMENT '浏览量',
   `app_id` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL COMMENT 'appid',
   PRIMARY KEY (`id`) USING BTREE
 ) ENGINE=InnoDB  DEFAULT CHARSET=utf8mb4 ROW_FORMAT=DYNAMIC COMMENT='小程序直播列表';
+
+DROP TABLE IF EXISTS `cms_wechat_mini_live_replay`;
+CREATE TABLE `cms_wechat_mini_live_replay` (
+  `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
+  `app_id` varchar(255) DEFAULT '',
+  `roomid` int(11) DEFAULT '0' COMMENT '所属直播间id',
+  `media_url` varchar(512) DEFAULT '0' COMMENT '媒体播放地址',
+  `media_ext` varchar(16) DEFAULT '' COMMENT '文件扩展名',
+  `download_url` varchar(512) DEFAULT '' COMMENT '下载的视频地址',
+  `expire_time` int(11) DEFAULT '0' COMMENT '过期时间',
+  `create_time` int(11) DEFAULT '0' COMMENT '创建时间',
+  `update_time` int(11) DEFAULT '0' COMMENT '更新时间',
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8mb4;

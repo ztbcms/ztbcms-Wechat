@@ -66,11 +66,14 @@
                             min-width="180">
                         <template slot-scope="scope">
                             <template v-if="scope.row.account_type == 'office'">
-                                <el-button @click="showOauthUrl(scope.row.app_id)" type="text" size="small">授权地址</el-button>
-                                <el-button @click="showOauthBase(scope.row.app_id)" type="text" size="small">静默授权地址</el-button>
+                                <el-button @click="showOauthUrl(scope.row.app_id)" type="text" size="small">授权地址
+                                </el-button>
+                                <el-button @click="showOauthBase(scope.row.app_id)" type="text" size="small">静默授权地址
+                                </el-button>
                             </template>
                             <el-button @click="editEvent(scope.row)" type="text" size="small">编辑</el-button>
-                            <el-button @click="deleteEvent(scope.row)" type="text" size="small" style="color: red">删除</el-button>
+                            <el-button @click="deleteEvent(scope.row)" type="text" size="small" style="color: red">删除
+                            </el-button>
                         </template>
                     </el-table-column>
                 </el-table>
@@ -130,7 +133,7 @@
                             type: 'post',
                             success: function (res) {
                                 if (res.status) {
-                                    layer.msg('删除成功')
+                                    layer.msg('删除成功');
                                     _this.getList()
                                 } else {
                                     layer.msg(res.msg)
@@ -139,12 +142,12 @@
                         })
                     },
                     editEvent: function (editItem) {
-                        var _this = this
+                        var _this = this;
                         layer.open({
                             type: 2,
-                            title: '操作',
+                            title: '',
                             content: "/Wechat/Wechat/editOffice?id=" + editItem.id,
-                            area: ['80%', '70%'],
+                            area: ['700px', '80%'],
                             end: function () {
                                 _this.getList()
                             }
@@ -159,9 +162,9 @@
                             type: 'get',
                             success: function (res) {
                                 if (res.status) {
-                                    _this.offices = res.data.items
-                                    _this.total = res.data.total_items
-                                    _this.form.page = res.data.page
+                                    _this.offices = res.data.items;
+                                    _this.total = res.data.total_items;
+                                    _this.form.page = res.data.page;
                                     _this.form.limit = res.data.limit
                                 }
                             }
@@ -169,25 +172,25 @@
                     },
 
                     addEvent: function () {
-                        var _this = this
+                        var _this = this;
                         layer.open({
                             type: 2,
-                            title: '操作',
+                            title: '',
                             content: "/Wechat/Wechat/editOffice",
-                            area: ['80%', '70%'],
+                            area: ['700px', '80%'],
                             end: function () {
                                 _this.getList()
                             }
                         })
                     },
                     showOauthUrl: function (app_id) {
-                        var urlObj = window.Ztbcms.parserUrl(window.location.href)
-                        console.log(urlObj)
+                        var urlObj = window.Ztbcms.parserUrl(window.location.href);
+                        console.log(urlObj);
                         layer.alert(urlObj.protocol + '//' + urlObj.host + '/Wechat/Auth/oauth/appid/' + app_id)
                     },
                     showOauthBase: function (app_id) {
-                        var urlObj = window.Ztbcms.parserUrl(window.location.href)
-                        console.log(urlObj)
+                        var urlObj = window.Ztbcms.parserUrl(window.location.href);
+                        console.log(urlObj);
                         layer.alert(urlObj.protocol + '//' + urlObj.host + '/Wechat/Auth/oauthBase/appid/' + app_id)
                     }
                 }
