@@ -38,6 +38,7 @@ D:.
 │      AutoTokenModel.class.php  用户登录凭证
 │      MiniCodeModel.class.php  小程序码
 │      MiniLiveModel.class.php  小程序直播
+│      MiniLiveReplayModel.class.php  小程序直播回放
 │      MiniFormIdModel.class.php  模板消息form_id
 │      MiniPhoneNumberModel.class.php  获取小程序手机号
 │      MiniSendMessageRecordModel.class.php  小程序订阅消息发送记录
@@ -122,10 +123,19 @@ D:.
  初始化项目  | 完善项目的文档说明，添加基本的目录结构介绍 
  
 <br> 
-<br> 
 
 ##### 版本号 ： 1.1.0.0 （2020年8月5日）
 
 功能  | 介绍  
  ---- | ----- 
  小程序直播  | 提供直播，直播回放功能
+ 
+<br> 
+ 
+##### 版本号 ： 1.1.1.0 （2020年9月3日）
+ 
+ 功能  | 介绍  
+  ---- | ----- 
+  公众号  | 公众号证书上传修改成成填写
+  小程序直播  | 回放数据入库、可播放回放视频
+  小程序模板消息  | 删除小程序模板消息
