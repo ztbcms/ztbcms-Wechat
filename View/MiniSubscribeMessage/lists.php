@@ -3,7 +3,7 @@
     <div id="app" v-cloak>
         <el-card>
             <div slot="header" class="clearfix">
-                <span>小程序消息模板列表</span>
+                <span>小程序订阅消息列表</span>
             </div>
             <div>
                 <el-form :inline="true" :model="searchData" class="demo-form-inline">
