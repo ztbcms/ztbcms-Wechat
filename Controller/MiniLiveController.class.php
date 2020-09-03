@@ -21,23 +21,23 @@ class MiniLiveController extends AdminBase
      */
     public function lists()
     {
-        if(IS_AJAX){
+        if (IS_AJAX) {
             $appId = I('app_id', '');
             $title = I('title', '');
-            $page = I('page', '1','trim');
-            $limit = I('limit', '20','trim');
+            $page = I('page', '1', 'trim');
+            $limit = I('limit', '20', 'trim');
             $where = [];
 
             if ($appId) $where['app_id'] = ['like', '%' . $appId . '%'];
-            if ($title)  $where['live_name'] = ['like', '%' . $title . '%'];
+            if ($title) $where['live_name'] = ['like', '%' . $title . '%'];
 
             $MiniLiveModel = new MiniLiveModel();
             $res = $MiniLiveModel->where($where)->page($page, $limit)->order('id DESC')->select();
             $totalCount = $MiniLiveModel->where($where)->count();
 
-            foreach ($res as $k => $v){
-                $res[$k]['start_time'] = date("Y-m-d H:i",$v['start_time']);
-                $res[$k]['end_time'] = date("Y-m-d H:i",$v['end_time']);
+            foreach ($res as $k => $v) {
+                $res[$k]['start_time'] = date("Y-m-d H:i", $v['start_time']);
+                $res[$k]['end_time'] = date("Y-m-d H:i", $v['end_time']);
             }
 
             $this->ajaxReturn(
@@ -51,7 +51,8 @@ class MiniLiveController extends AdminBase
     /**
      * 同步直播间
      */
-    public function sysMiniLive(){
+    public function sysMiniLive()
+    {
         $miniOfiiceModel = new OfficesModel();
         $minioffices = $miniOfiiceModel
             ->where([
@@ -60,21 +61,28 @@ class MiniLiveController extends AdminBase
             ->field("app_id")
             ->select();
 
-        foreach ($minioffices as $k => $v){
+        foreach ($minioffices as $k => $v) {
             $MiniLiveService = new MiniLiveService($v['app_id']);
             $MiniLiveService->sysMiniLive();
         }
-        $this->ajaxReturn(self::createReturn(true,[],'同步完成'));
+        $this->ajaxReturn(self::createReturn(true, [], '同步完成'));
     }
 
     /**
      * 查看回放
      */
-    public function getPlaybacks(){
-        $app_id = I('app_id','','trim');
-        $roomId = I('roomId','','trim');
-        $MiniLiveService = new MiniLiveService($app_id);
-        $res = $MiniLiveService->getPlaybacks();
-        $this->ajaxReturn($res);
+    public function getPlaybacks()
+    {
+        $appId = I('app_id', '', 'trim');
+        $roomId = I('roomId', '', 'trim');
+        if (IS_AJAX) {
+            $MiniLiveService = new MiniLiveService($appId);
+            $res = $MiniLiveService->getPlaybacks($roomId);
+            $this->ajaxReturn($res);
+        } else {
+            $this->assign('app_id', $appId);
+            $this->assign('room_id', $roomId);
+            $this->display('playbacks');
+        }
     }
 }

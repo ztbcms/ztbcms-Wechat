@@ -39,11 +39,6 @@ return [
                         "type"   => 0,
                         "status" => 1,
                         "name"   => "小程序码",
-                    ], [
-                        "route"  => "Wechat/Mini/templateList",
-                        "type"   => 0,
-                        "status" => 1,
-                        "name"   => "消息模板",
                     ],
                     [
                         "route"  => "Wechat/MiniSubscribeMessage/lists",

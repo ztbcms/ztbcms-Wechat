@@ -30,19 +30,27 @@ class WxpayService extends BaseService
         $officeModel = new OfficesModel();
         $office = $officeModel->where(['app_id' => $app_id])->find();
         if ($office) {
+
+            $certDir = APP_PATH . "Wechat/cert/{$app_id}/";
+            if (!is_dir($certDir)) mkdir($certDir, 0755, true);
+            $certPath = $certDir . "cert.pem";
+            $keyPath = $certDir . "key.pem";
+            if (!file_exists($certPath)) file_put_contents($certPath, $office['cert_path']);
+            if (!file_exists($keyPath)) file_put_contents($keyPath, $office['key_path']);
+
             $config = [
-                'app_id'        => $office['app_id'],
-                'mch_id'        => $office['mch_id'],
-                'key'           => $office['key'],
-                'sandbox'       => $isSandbox,
-                'cert_path'     => $office['cert_path'], // XXX: 绝对路径！！！！
-                'key_path'      => $office['key_path'],      // XXX: 绝对路径！！！！
+                'app_id' => $office['app_id'],
+                'mch_id' => $office['mch_id'],
+                'key' => $office['key'],
+                'sandbox' => $isSandbox,
+                'cert_path' => $office['cert_path'], // XXX: 绝对路径！！！！
+                'key_path' => $office['key_path'],      // XXX: 绝对路径！！！！
                 // 下面为可选项
                 // 指定 API 调用返回结果的类型：array(default)/collection/object/raw/自定义类名
                 'response_type' => 'array',
-                'log'           => [
+                'log' => [
                     'level' => 'debug',
-                    'file'  => __DIR__.'/wechat.log',
+                    'file' => __DIR__ . '/wechat.log',
                 ],
             ];
             $this->app_id = $app_id;
@@ -68,22 +76,22 @@ class WxpayService extends BaseService
             $order = $wxpayOrderModel->where(['out_trade_no' => $outTradeNo])->find();
             if ($order) {
                 $updateData = [
-                    'mch_id'         => $message['mch_id'],
-                    'nonce_str'      => $message['nonce_str'],
-                    'sign'           => $message['sign'],
-                    'result_code'    => $message['result_code'],
-                    'err_code'       => empty($message['err_code']) ? '' : $message['err_code'],
-                    'err_code_des'   => empty($message['err_code_des']) ? '' : $message['err_code_des'],
-                    'open_id'        => $message['openid'],
-                    'is_subscribe'   => $message['is_subscribe'],
-                    'trade_type'     => $message['trade_type'],
-                    'bank_type'      => $message['bank_type'],
-                    'total_fee'      => $message['total_fee'],
-                    'cash_fee'       => $message['cash_fee'],
+                    'mch_id' => $message['mch_id'],
+                    'nonce_str' => $message['nonce_str'],
+                    'sign' => $message['sign'],
+                    'result_code' => $message['result_code'],
+                    'err_code' => empty($message['err_code']) ? '' : $message['err_code'],
+                    'err_code_des' => empty($message['err_code_des']) ? '' : $message['err_code_des'],
+                    'open_id' => $message['openid'],
+                    'is_subscribe' => $message['is_subscribe'],
+                    'trade_type' => $message['trade_type'],
+                    'bank_type' => $message['bank_type'],
+                    'total_fee' => $message['total_fee'],
+                    'cash_fee' => $message['cash_fee'],
                     'transaction_id' => $message['transaction_id'],
-                    'out_trade_no'   => $message['out_trade_no'],
-                    'time_end'       => $message['time_end'],
-                    'update_time'    => time()
+                    'out_trade_no' => $message['out_trade_no'],
+                    'time_end' => $message['time_end'],
+                    'update_time' => time()
                 ];
                 $wxpayOrderModel->where(['id' => $order['id']])->save($updateData);
                 $func($message, $fail);
@@ -103,50 +111,50 @@ class WxpayService extends BaseService
     {
         $wxpayRedpackModel = new WxpayRedpackModel();
         $where = [
-            'app_id'            => $this->app_id,
-            'status'            => WxpayRedpackModel::STATUS_NO, //处理未完成的退款
+            'app_id' => $this->app_id,
+            'status' => WxpayRedpackModel::STATUS_NO, //处理未完成的退款
             'next_process_time' => ['lt', time()],//处理时间小于现在时间
-            'process_count'     => ['lt', 7],//处理次数小于7次
+            'process_count' => ['lt', 7],//处理次数小于7次
         ];
         $redpackOrders = $wxpayRedpackModel->where($where)->select();
         $nextProcessTimeArray = [60, 300, 900, 3600, 10800, 21600, 86400];
         foreach ($redpackOrders as $redpackOrder) {
             try {
                 $redpackRes = $this->payment->redpack->sendNormal([
-                    'mch_billno'   => $redpackOrder['mch_billno'],
-                    'send_name'    => $redpackOrder['send_name'],
-                    're_openid'    => $redpackOrder['open_id'],
+                    'mch_billno' => $redpackOrder['mch_billno'],
+                    'send_name' => $redpackOrder['send_name'],
+                    're_openid' => $redpackOrder['open_id'],
                     'total_amount' => $redpackOrder['total_amount'],  //单位为分，不小于100
-                    'wishing'      => $redpackOrder['wishing'],
-                    'act_name'     => $redpackOrder['act_name'],
-                    'remark'       => $redpackOrder['remark'],
+                    'wishing' => $redpackOrder['wishing'],
+                    'act_name' => $redpackOrder['act_name'],
+                    'remark' => $redpackOrder['remark'],
                 ]);
                 if ($redpackRes['result_code'] == 'SUCCESS' && $redpackRes['return_code'] == 'SUCCESS') {
                     $postData = [
-                        'status'            => WxpayRedpackModel::STATUS_YES,
-                        'send_result'       => json_encode($redpackRes),
+                        'status' => WxpayRedpackModel::STATUS_YES,
+                        'send_result' => json_encode($redpackRes),
                         'next_process_time' => time() + (empty($nextProcessTimeArray[$redpackOrder['process_count']]) ? 86400 : $nextProcessTimeArray[$redpackOrder['process_count']]),
-                        'process_count'     => $redpackOrder['process_count'] + 1,
-                        'update_time'       => time()
+                        'process_count' => $redpackOrder['process_count'] + 1,
+                        'update_time' => time()
                     ];
                     $wxpayRedpackModel->where(['id' => $redpackOrder['id']])->save($postData);
                 } else {
                     $postData = [
-                        'status'            => WxpayRedpackModel::STATUS_NO,
-                        'send_result'       => json_encode($redpackRes),
+                        'status' => WxpayRedpackModel::STATUS_NO,
+                        'send_result' => json_encode($redpackRes),
                         'next_process_time' => time() + (empty($nextProcessTimeArray[$redpackOrder['process_count']]) ? 86400 : $nextProcessTimeArray[$redpackOrder['process_count']]),
-                        'process_count'     => $redpackOrder['process_count'] + 1,
-                        'update_time'       => time()
+                        'process_count' => $redpackOrder['process_count'] + 1,
+                        'update_time' => time()
                     ];
                     $wxpayRedpackModel->where(['id' => $redpackOrder['id']])->save($postData);
                 }
             } catch (\EasyWeChat\Kernel\Exceptions\Exception $exception) {
                 $postData = [
-                    'status'            => WxpayRedpackModel::STATUS_NO,
-                    'send_result'       => $exception->getMessage(),
+                    'status' => WxpayRedpackModel::STATUS_NO,
+                    'send_result' => $exception->getMessage(),
                     'next_process_time' => time() + (empty($nextProcessTimeArray[$redpackOrder['process_count']]) ? 86400 : $nextProcessTimeArray[$redpackOrder['process_count']]),
-                    'process_count'     => $redpackOrder['process_count'] + 1,
-                    'update_time'       => time()
+                    'process_count' => $redpackOrder['process_count'] + 1,
+                    'update_time' => time()
                 ];
                 $wxpayRedpackModel->where(['id' => $redpackOrder['id']])->save($postData);
             }
@@ -160,7 +168,7 @@ class WxpayService extends BaseService
      * @param        $openId
      * @param        $totalAmount 发送金额
      * @param        $sendName    发送者名称
-     * @param string $wishing     祝福语
+     * @param string $wishing 祝福语
      * @param string $actName
      * @param string $remark
      *
@@ -169,20 +177,20 @@ class WxpayService extends BaseService
      */
     function createRedpack($openId, $totalAmount, $sendName, $wishing = "恭喜发财，大吉大利", $actName = "红包活动", $remark = "无")
     {
-        $mchBillno = date("YmdHis").rand(100000, 999990);
+        $mchBillno = date("YmdHis") . rand(100000, 999990);
         $postData = [
-            'app_id'            => $this->app_id,
-            'mch_billno'        => $mchBillno,
-            'open_id'           => $openId,
-            'total_amount'      => $totalAmount,
-            'send_name'         => $sendName,
-            'wishing'           => $wishing,
-            'act_name'          => $actName,
-            'remark'            => $remark,
-            'status'            => WxpayRedpackModel::STATUS_NO,
+            'app_id' => $this->app_id,
+            'mch_billno' => $mchBillno,
+            'open_id' => $openId,
+            'total_amount' => $totalAmount,
+            'send_name' => $sendName,
+            'wishing' => $wishing,
+            'act_name' => $actName,
+            'remark' => $remark,
+            'status' => WxpayRedpackModel::STATUS_NO,
             'next_process_time' => time(),
-            'process_count'     => 0,
-            'create_time'       => time()
+            'process_count' => 0,
+            'create_time' => time()
         ];
         $wxpayRedpackModel = new WxpayRedpackModel();
         $res = $wxpayRedpackModel->add($postData);
@@ -203,10 +211,10 @@ class WxpayService extends BaseService
     {
         $wxpayMchpayModel = new WxpayMchpayModel();
         $where = [
-            'app_id'            => $this->app_id,
-            'status'            => WxpayMchpayModel::STATUS_NO, //处理未完成的退款
+            'app_id' => $this->app_id,
+            'status' => WxpayMchpayModel::STATUS_NO, //处理未完成的退款
             'next_process_time' => ['lt', time()],//处理时间小于现在时间
-            'process_count'     => ['lt', 7],//处理次数小于7次
+            'process_count' => ['lt', 7],//处理次数小于7次
         ];
         $mchpayOrders = $wxpayMchpayModel->where($where)->select();
         $nextProcessTimeArray = [60, 300, 900, 3600, 10800, 21600, 86400];
@@ -214,37 +222,37 @@ class WxpayService extends BaseService
             try {
                 $mchpayRes = $this->payment->transfer->toBalance([
                     'partner_trade_no' => $mchpayOrder['partner_trade_no'], // 商户订单号，需保持唯一性(只能是字母或者数字，不能包含有符号)
-                    'openid'           => $mchpayOrder['open_id'],
-                    'check_name'       => 'NO_CHECK', // NO_CHECK：不校验真实姓名, FORCE_CHECK：强校验真实姓名
-                    'amount'           => $mchpayOrder['amount'], // 企业付款金额，单位为分
-                    'desc'             => $mchpayOrder['description'], // 企业付款操作说明信息。必填
+                    'openid' => $mchpayOrder['open_id'],
+                    'check_name' => 'NO_CHECK', // NO_CHECK：不校验真实姓名, FORCE_CHECK：强校验真实姓名
+                    'amount' => $mchpayOrder['amount'], // 企业付款金额，单位为分
+                    'desc' => $mchpayOrder['description'], // 企业付款操作说明信息。必填
                 ]);
                 if ($mchpayRes['result_code'] == 'SUCCESS' && $mchpayRes['return_code'] == 'SUCCESS') {
                     $postData = [
-                        'status'            => WxpayMchpayModel::STATUS_YES,
-                        'refund_result'     => json_encode($mchpayRes),
+                        'status' => WxpayMchpayModel::STATUS_YES,
+                        'refund_result' => json_encode($mchpayRes),
                         'next_process_time' => time() + (empty($nextProcessTimeArray[$mchpayOrder['process_count']]) ? 86400 : $nextProcessTimeArray[$mchpayOrder['process_count']]),
-                        'process_count'     => $mchpayOrder['process_count'] + 1,
-                        'update_time'       => time()
+                        'process_count' => $mchpayOrder['process_count'] + 1,
+                        'update_time' => time()
                     ];
                     $wxpayMchpayModel->where(['id' => $mchpayOrder['id']])->save($postData);
                 } else {
                     $postData = [
-                        'status'            => WxpayMchpayModel::STATUS_NO,
-                        'refund_result'     => json_encode($mchpayRes),
+                        'status' => WxpayMchpayModel::STATUS_NO,
+                        'refund_result' => json_encode($mchpayRes),
                         'next_process_time' => time() + (empty($nextProcessTimeArray[$mchpayOrder['process_count']]) ? 86400 : $nextProcessTimeArray[$mchpayOrder['process_count']]),
-                        'process_count'     => $mchpayOrder['process_count'] + 1,
-                        'update_time'       => time()
+                        'process_count' => $mchpayOrder['process_count'] + 1,
+                        'update_time' => time()
                     ];
                     $wxpayMchpayModel->where(['id' => $mchpayOrder['id']])->save($postData);
                 }
             } catch (\EasyWeChat\Kernel\Exceptions\Exception $exception) {
                 $postData = [
-                    'status'            => WxpayMchpayModel::STATUS_NO,
-                    'refund_result'     => $exception->getMessage(),
+                    'status' => WxpayMchpayModel::STATUS_NO,
+                    'refund_result' => $exception->getMessage(),
                     'next_process_time' => time() + (empty($nextProcessTimeArray[$mchpayOrder['process_count']]) ? 86400 : $nextProcessTimeArray[$mchpayOrder['process_count']]),
-                    'process_count'     => $mchpayOrder['process_count'] + 1,
-                    'update_time'       => time()
+                    'process_count' => $mchpayOrder['process_count'] + 1,
+                    'update_time' => time()
                 ];
                 $wxpayMchpayModel->where(['id' => $mchpayOrder['id']])->save($postData);
             }
@@ -264,17 +272,17 @@ class WxpayService extends BaseService
      */
     function createMchpay($openId, $amount, $description = "企业付款")
     {
-        $partnerTradeNo = date("YmdHis").rand(100000, 999990);
+        $partnerTradeNo = date("YmdHis") . rand(100000, 999990);
         $postData = [
-            'app_id'            => $this->app_id,
-            'partner_trade_no'  => $partnerTradeNo,
-            'open_id'           => $openId,
-            'amount'            => $amount,
-            'description'       => $description,
-            'status'            => WxpayMchpayModel::STATUS_NO,
+            'app_id' => $this->app_id,
+            'partner_trade_no' => $partnerTradeNo,
+            'open_id' => $openId,
+            'amount' => $amount,
+            'description' => $description,
+            'status' => WxpayMchpayModel::STATUS_NO,
             'next_process_time' => time(),
-            'process_count'     => 0,
-            'create_time'       => time()
+            'process_count' => 0,
+            'create_time' => time()
         ];
         $wxpayMchpayModel = new WxpayMchpayModel();
         $res = $wxpayMchpayModel->add($postData);
@@ -296,10 +304,10 @@ class WxpayService extends BaseService
     {
         $wxpayRefundModel = new WxpayRefundModel();
         $where = [
-            'app_id'            => $this->app_id,
-            'status'            => WxpayRefundModel::STATUS_NO, //处理未完成的退款
+            'app_id' => $this->app_id,
+            'status' => WxpayRefundModel::STATUS_NO, //处理未完成的退款
             'next_process_time' => ['lt', time()],//处理时间小于现在时间
-            'process_count'     => ['lt', 7],//处理次数小于7次
+            'process_count' => ['lt', 7],//处理次数小于7次
         ];
         $refundOrders = $wxpayRefundModel->where($where)->select();
         $nextProcessTimeArray = [60, 300, 900, 3600, 10800, 21600, 86400];
@@ -310,30 +318,30 @@ class WxpayService extends BaseService
                 ]);
                 if ($refundRes['result_code'] == 'SUCCESS' && $refundRes['return_code'] == 'SUCCESS') {
                     $postData = [
-                        'status'            => WxpayRefundModel::STATUS_YES,
-                        'refund_result'     => json_encode($refundRes),
+                        'status' => WxpayRefundModel::STATUS_YES,
+                        'refund_result' => json_encode($refundRes),
                         'next_process_time' => time() + (empty($nextProcessTimeArray[$refundOrder['process_count']]) ? 86400 : $nextProcessTimeArray[$refundOrder['process_count']]),
-                        'process_count'     => $refundOrder['process_count'] + 1,
-                        'update_time'       => time()
+                        'process_count' => $refundOrder['process_count'] + 1,
+                        'update_time' => time()
                     ];
                     $wxpayRefundModel->where(['id' => $refundOrder['id']])->save($postData);
                 } else {
                     $postData = [
-                        'status'            => WxpayRefundModel::STATUS_NO,
-                        'refund_result'     => json_encode($refundRes),
+                        'status' => WxpayRefundModel::STATUS_NO,
+                        'refund_result' => json_encode($refundRes),
                         'next_process_time' => time() + (empty($nextProcessTimeArray[$refundOrder['process_count']]) ? 86400 : $nextProcessTimeArray[$refundOrder['process_count']]),
-                        'process_count'     => $refundOrder['process_count'] + 1,
-                        'update_time'       => time()
+                        'process_count' => $refundOrder['process_count'] + 1,
+                        'update_time' => time()
                     ];
                     $wxpayRefundModel->where(['id' => $refundOrder['id']])->save($postData);
                 }
             } catch (\EasyWeChat\Kernel\Exceptions\Exception $exception) {
                 $postData = [
-                    'status'            => WxpayRefundModel::STATUS_NO,
-                    'refund_result'     => $exception->getMessage(),
+                    'status' => WxpayRefundModel::STATUS_NO,
+                    'refund_result' => $exception->getMessage(),
                     'next_process_time' => time() + (empty($nextProcessTimeArray[$refundOrder['process_count']]) ? 86400 : $nextProcessTimeArray[$refundOrder['process_count']]),
-                    'process_count'     => $refundOrder['process_count'] + 1,
-                    'update_time'       => time()
+                    'process_count' => $refundOrder['process_count'] + 1,
+                    'update_time' => time()
                 ];
                 $wxpayRefundModel->where(['id' => $refundOrder['id']])->save($postData);
             }
@@ -354,18 +362,18 @@ class WxpayService extends BaseService
      */
     function createRefund($outTradeNo, $totalFee, $refundFee, $refundDescription)
     {
-        $outRefundNo = date("YmdHis").rand(100000, 999990);
+        $outRefundNo = date("YmdHis") . rand(100000, 999990);
         $postData = [
-            'app_id'             => $this->app_id,
-            'out_trade_no'       => $outTradeNo,
-            'out_refund_no'      => $outRefundNo,
-            'total_fee'          => $totalFee,
-            'refund_fee'         => $refundFee,
+            'app_id' => $this->app_id,
+            'out_trade_no' => $outTradeNo,
+            'out_refund_no' => $outRefundNo,
+            'total_fee' => $totalFee,
+            'refund_fee' => $refundFee,
             'refund_description' => $refundDescription,
-            'status'             => WxpayRefundModel::STATUS_NO,
-            'next_process_time'  => time(),
-            'process_count'      => 0,
-            'create_time'        => time()
+            'status' => WxpayRefundModel::STATUS_NO,
+            'next_process_time' => time(),
+            'process_count' => 0,
+            'create_time' => time()
         ];
         $wxpayRefundModel = new WxpayRefundModel();
         $res = $wxpayRefundModel->add($postData);
@@ -392,17 +400,17 @@ class WxpayService extends BaseService
     function createUnity($openId, $outTradeNo, $totalFee, $notifyUrl, $body = "微信支付", $tradeType = "JSAPI")
     {
         $result = $this->payment->order->unify([
-            'body'         => $body,
+            'body' => $body,
             'out_trade_no' => $outTradeNo,
-            'total_fee'    => $totalFee,
-            'notify_url'   => $notifyUrl, // 支付结果通知网址，如果不设置则会使用配置里的默认地址
-            'trade_type'   => $tradeType, // 请对应换成你的支付方式对应的值类型
-            'openid'       => $openId,
+            'total_fee' => $totalFee,
+            'notify_url' => $notifyUrl, // 支付结果通知网址，如果不设置则会使用配置里的默认地址
+            'trade_type' => $tradeType, // 请对应换成你的支付方式对应的值类型
+            'openid' => $openId,
         ]);
         if ($result['result_code'] == 'SUCCESS' && $result['return_code'] == 'SUCCESS') {
             return $result['prepay_id'];
         }
-        $this->errorMsg = $result['return_msg'];
+        $this->errorMsg = $result['err_code_des'];
         return false;
     }
 
@@ -423,15 +431,15 @@ class WxpayService extends BaseService
     {
         $prepayId = $this->createUnity($openId, $outTradeNo, $totalFee, $notifyUrl, $body, "JSAPI");
         if (!$prepayId) {
-            return self::createReturn(false, [], '微信支付下单失败：'.$this->errorMsg);
+            return self::createReturn(false, [], '微信支付下单失败：' . $this->errorMsg);
         }
         $postData = [
-            'app_id'       => $this->app_id,
-            'open_id'      => $openId,
+            'app_id' => $this->app_id,
+            'open_id' => $openId,
             'out_trade_no' => $outTradeNo,
-            'total_fee'    => $totalFee,
-            'create_time'  => time(),
-            'notify_url'   => $notifyUrl
+            'total_fee' => $totalFee,
+            'create_time' => time(),
+            'notify_url' => $notifyUrl
         ];
         //添加支付订单入库
         $wxpayOrderModel = new WxpayOrderModel();
@@ -457,15 +465,15 @@ class WxpayService extends BaseService
     {
         $prepayId = $this->createUnity($openId, $outTradeNo, $totalFee, $notifyUrl, $body, "JSAPI");
         if (!$prepayId) {
-            return self::createReturn(false, [], '微信支付下单失败：'.$this->errorMsg);
+            return self::createReturn(false, [], '微信支付下单失败：' . $this->errorMsg);
         }
         $postData = [
-            'app_id'       => $this->app_id,
-            'open_id'      => $openId,
+            'app_id' => $this->app_id,
+            'open_id' => $openId,
             'out_trade_no' => $outTradeNo,
-            'total_fee'    => $totalFee,
-            'create_time'  => time(),
-            'notify_url'   => $notifyUrl
+            'total_fee' => $totalFee,
+            'create_time' => time(),
+            'notify_url' => $notifyUrl
         ];
         //添加支付订单入库
         $wxpayOrderModel = new WxpayOrderModel();

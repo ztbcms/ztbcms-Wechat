@@ -27,55 +27,24 @@
                     </el-form-item>
                 </el-form>
             </div>
-
-            <div class="modal fade" id="paramModel" tabindex="-1"
-                 role="dialog" aria-labelledby="myModalLabel"
-                 style="margin-bottom: 20px;"
-            >
-                <div class="modal-dialog" role="document">
-                    <div class="modal-content">
-                        <div class="modal-header">
-                            <h4 class="modal-title" id="myModalLabel"> 查看回放json </h4>
-                        </div>
-                        <div class="modal-body">
-                            <code>{</code><br>
-                            </tba><div v-for="(item,key) in param" :key="key">
-                                &nbsp;&nbsp;<code>"{{ key }}" : </code>
-                                <template v-if="'object' !== typeof(param[key])">
-                                    <code>"{{ param[key] }}",</code>
-                                </template>
-                                <template v-else >
-                                    <br>&emsp;&nbsp;&nbsp;&nbsp;<code>{</code>
-                                    <template v-for="(i,k) in param[key]" :k="k">
-                                        <br>&emsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<code>"{{ k }}" : "{{ param[key][k] }}",</code>
-                                    </template>
-                                    <br>&emsp;&nbsp;&nbsp;&nbsp;<code>}</code>
-                                </template>
-                            </div>
-                            <code>}</code><br>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
             <div>
                 <el-table
-                    :data="users"
-                    border
-                    style="width: 100%">
+                        :data="users"
+                        border
+                        style="width: 100%">
 
                     <el-table-column
-                        prop="app_id"
-                        align="center"
-                        label="appid"
-                        min-width="180">
+                            prop="app_id"
+                            align="center"
+                            label="appid"
+                            min-width="180">
                     </el-table-column>
 
                     <el-table-column
-                        prop="live_name"
-                        label="直播间名称"
-                        align="center"
-                        min-width="120">
+                            prop="live_name"
+                            label="直播间名称"
+                            align="center"
+                            min-width="120">
                     </el-table-column>
 
                     <el-table-column
@@ -86,8 +55,8 @@
                     </el-table-column>
 
                     <el-table-column
-                        label="直播状态"
-                        align="center">
+                            label="直播状态"
+                            align="center">
                         <template slot-scope="scope">
                             <template v-if="scope.row.live_status == 101">
                                 直播中
@@ -154,13 +123,13 @@
 
             <div class="page-container">
                 <el-pagination
-                    background
-                    :page-size="limit"
-                    :page-count="totalPages"
-                    :current-page="page"
-                    :total="totalItems"
-                    layout="prev, pager, next"
-                    @current-change="currentChangeEvent">
+                        background
+                        :page-size="limit"
+                        :page-count="totalPages"
+                        :current-page="page"
+                        :total="totalItems"
+                        layout="prev, pager, next"
+                        @current-change="currentChangeEvent">
                 </el-pagination>
             </div>
         </el-card>
@@ -232,17 +201,24 @@
                         })
                     },
                     getPlaybacks: function (row) {
-                        var that = this;
-                        this.httpGet("/Wechat/MiniLive/getPlaybacks", {
-                            app_id : row.app_id,
-                            roomId : row.roomid
-                        }, function (res) {
-                            if (res.status) {
-                                that.param = res.data;
-                            } else {
-                                that.$message.error(res.msg);
+                        layer.open({
+                            type: 2,
+                            title: '',
+                            content: "/Wechat/MiniLive/getPlaybacks?app_id=" + row.app_id + '&roomId=' + row.roomid,
+                            area: ['700px', '80%'],
+                            end: function () {
                             }
-                        })
+                        });
+                        // this.httpGet("/Wechat/MiniLive/getPlaybacks", {
+                        //     app_id: row.app_id,
+                        //     roomId: row.roomid
+                        // }, function (res) {
+                        //     if (res.status) {
+                        //         that.param = res.data;
+                        //     } else {
+                        //         that.$message.error(res.msg);
+                        //     }
+                        // })
                     },
                     searchEvent() {
                         this.page = 1;

@@ -77,14 +77,14 @@ class WechatController extends AdminBase
         $postData = [
             'name' => $name,
             'account_type' => $accountType,
-            'app_id'       => $appId,
-            'secret'       => $secret,
-            'mch_id'       => $mchId,
-            'key'          => $key,
-            'cert_path'    => $certPath,
-            'key_path'     => $keyPath,
-            'token'        => $token,
-            'aes_key'      => $aesKey,
+            'app_id' => $appId,
+            'secret' => $secret,
+            'mch_id' => $mchId,
+            'key' => $key,
+            'cert_path' => $certPath,
+            'key_path' => $keyPath,
+            'token' => $token,
+            'aes_key' => $aesKey,
         ];
         $OfficesModel = new OfficesModel();
         $res = $OfficesModel->editOffice($postData, $id);
@@ -121,7 +121,7 @@ class WechatController extends AdminBase
     {
         $upload = new \UploadFile();
         $upload->exts = ['jpg', 'gif', 'png', 'jpeg'];
-        $directory = C("UPLOADFILEPATH").'wechat/cert/';
+        $directory = C("UPLOADFILEPATH") . 'wechat/cert/';
         $directory = rtrim($directory, '/');
         if (!is_dir($directory)) {
             mkdir($directory, 0755, true);
