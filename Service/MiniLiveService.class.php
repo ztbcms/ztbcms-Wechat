@@ -9,13 +9,14 @@ class MiniLiveService extends MiniService
 
     /**
      * 同步获取直播列表
-     * @param string $app_id
-     * @param string $secret
+     *
+     * @throws \EasyWeChat\Kernel\Exceptions\InvalidConfigException
+     * @throws \GuzzleHttp\Exception\GuzzleException
      * @return array
      */
     function sysMiniLive()
     {
-        $res = $this->app->live->getRooms(0, 100);
+        $res = $this->app->broadcast->getRooms(0, 100);
         $room_info = $res['room_info'];
         $MiniLiveModel = new MiniLiveModel();
         //清除旧记录
